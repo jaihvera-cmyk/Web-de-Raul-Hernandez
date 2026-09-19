@@ -7,7 +7,7 @@
     <meta name="description" content="Catálogo oficial de obra pictórica de Raúl Hernández. Pintura abstracta, de autor y piezas únicas expuestas en el corazón de Madrid.">
     <meta name="keywords" content="pintura de autor, pintura abstracta, arte contemporáneo, antigüedades, Rastro de Madrid, cuadros exclusivos, Raúl Hernández">
     <meta name="google-site-verification" content="bYtIssCyfnDdpcjWtlAM6_YX-2mxLPdDyN2o8_TRpWI" />
-    
+
     <!-- Google tag (gtag.js) -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-BGHGF63V0R"></script>
     <script>
@@ -21,7 +21,7 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
-    
+
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
 
@@ -40,7 +40,7 @@
     <header class="w-full border-b border-amber-100 bg-white/80 backdrop-blur-md sticky top-0 z-50 shadow-sm">
         <div class="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
             <div class="flex flex-col justify-center">
-                <img src="firma.png" alt="Raúl Hernández" class="firma-header mb-1">
+                <img src="firma_transparente.png" alt="Raúl Hernández" class="firma-header mb-1">
                 <p class="text-[10px] text-amber-700 tracking-[0.2em] uppercase font-medium">Pintura de Autor</p>
             </div>
             <div class="flex items-center space-x-6">
@@ -50,7 +50,7 @@
                 </a>
             </div>
         </div>
-        
+
         <nav class="max-w-7xl mx-auto px-6 flex justify-center gap-8 pt-3 pb-0 text-sm">
             <button class="nav-btn active" onclick="cambiarSeccion('mi_obra', this)">Mi Obra</button>
             <button class="nav-btn" onclick="cambiarSeccion('a_la_venta', this)">A la Venta</button>
@@ -62,6 +62,9 @@
         <div id="seccion-galeria" class="tab-content active">
             <div id="galeria-grid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8">
                 <div class="col-span-full text-center py-10 text-amber-800/60"><i class="fas fa-spinner fa-spin mr-2"></i> Cargando catálogo...</div>
+            </div>
+            <div id="contenedor-cargar-mas" class="w-full text-center mt-12 hidden">
+                <button onclick="cargarGaleria(false)" class="text-sm border border-amber-200 bg-white text-amber-800 px-6 py-2 rounded-full shadow-sm hover:bg-amber-50 transition-colors">Cargar más obras</button>
             </div>
         </div>
 
@@ -99,6 +102,7 @@
         const db = firebase.firestore();
 
         let modoActual = 'mi_obra';
+        let ultimoDocumento = null;
 
         function cambiarSeccion(seccion, boton) {
             document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
@@ -112,7 +116,7 @@
                 document.getElementById('seccion-quien-soy').classList.remove('active');
                 document.getElementById('seccion-galeria').classList.add('active');
                 modoActual = seccion;
-                cargarGaleria();
+                cargarGaleria(true);
             }
         }
 
@@ -127,32 +131,59 @@
             });
         }
 
-        function cargarGaleria() {
+        function cargarGaleria(esNuevaCarga = true) {
             const grid = document.getElementById('galeria-grid');
-            grid.innerHTML = '<div class="col-span-full text-center py-10 text-amber-800/60"><i class="fas fa-spinner fa-spin mr-2"></i> Cargando obras...</div>';
+            const btnCargarMas = document.getElementById('contenedor-cargar-mas');
 
-            db.collection('cuadros')
-              .where('destino', 'array-contains', modoActual)
-              .get()
+            if (esNuevaCarga) {
+                grid.innerHTML = '<div class="col-span-full text-center py-10 text-amber-800/60"><i class="fas fa-spinner fa-spin mr-2"></i> Cargando obras...</div>';
+                ultimoDocumento = null;
+                if(btnCargarMas) btnCargarMas.classList.add('hidden');
+            }
+
+            let query = db.collection('cuadros');
+            if (modoActual === 'a_la_venta') {
+                query = query.where('estado', '==', 'Disponible para la venta');
+            }
+
+            query = query.limit(12);
+            if (!esNuevaCarga && ultimoDocumento) {
+                query = query.startAfter(ultimoDocumento);
+            }
+
+            query.get()
               .then(snap => {
-                  grid.innerHTML = '';
-                  if (snap.empty) {
+                  if (esNuevaCarga) {
+                      grid.innerHTML = '';
+                  }
+
+                  if (snap.empty && esNuevaCarga) {
                       grid.innerHTML = '<div class="col-span-full text-center py-10 text-gray-500">No hay obras disponibles en esta sección actualmente.</div>';
                       return;
                   }
 
+                  if (!snap.empty) {
+                      ultimoDocumento = snap.docs[snap.docs.length - 1];
+                  }
+
+                  if (snap.docs.length === 12 && btnCargarMas) {
+                      btnCargarMas.classList.remove('hidden');
+                  } else if (btnCargarMas) {
+                      btnCargarMas.classList.add('hidden');
+                  }
+
                   snap.forEach(doc => {
                       const ob = doc.data();
-                      
-                      const textoAlt = ob.material ? `Cuadro de Raúl Hernández - ${ob.material}` : 'Obra abstracta de Raúl Hernández';
-                      const descripcionHtml = ob.descripcion ? `<p class="text-sm text-amber-900/80 mt-2 mb-2 italic">"${ob.descripcion}"</p>` : '';
-                      
+
+                      const textoAlt = `Cuadro de Raúl Hernández - ${ob.material || 'Técnica mixta'} - ${ob.dimensiones || 'Sin medidas'}`;
+                      const descripcionHtml = ob.descripcion ? `<p class="text-sm text-amber-900/80 mt-2 mb-2 italic line-clamp-2" style="display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;">"${ob.descripcion}"</p>` : '';
+
                       let bloquePrecio = '';
                       let botonWhatsApp = '';
-                      
+
                       if (ob.estado === 'Disponible para la venta') {
                           bloquePrecio = ob.precio ? `<span class="text-lg font-bold text-amber-900">${ob.precio} €</span>` : `<span class="text-sm text-amber-800">Consultar precio</span>`;
-                          
+
                           const mensajeWa = encodeURIComponent(`Hola, estaba viendo tu web y me interesa informarme sobre esta obra (${ob.material || 'Sin título'} / ${ob.dimensiones || 'Medidas no esp.'}). ¿Sigue disponible?`);
                           botonWhatsApp = `
                               <a href="https://wa.me/34692392620?text=${mensajeWa}" target="_blank" class="mt-4 w-full block text-center bg-amber-900 text-white py-2.5 rounded-lg text-sm font-medium hover:bg-amber-800 transition-colors">
@@ -190,7 +221,7 @@
         }
 
         window.onload = () => {
-            cargarGaleria();
+            cargarGaleria(true);
         };
     </script>
 </body>
