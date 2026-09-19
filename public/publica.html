@@ -34,6 +34,7 @@
         .nav-btn { color: #92400e; padding-bottom: 4px; border-bottom: 2px solid transparent; transition: all 0.2s; }
         .nav-btn.active { border-color: #92400e; font-weight: 500; }
     </style>
+    <script src="https://aframe.io/releases/1.4.2/aframe.min.js"></script>
 </head>
 <body class="min-h-screen flex flex-col justify-between">
 
@@ -179,9 +180,20 @@
                     const estaEnVenta = estadoObra.includes('venta') || estadoObra.includes('disponible');
 
                     if (estaEnVenta) {
-                        bloquePrecio = ob.precio ? `<span class="text-lg font-bold text-amber-900">${ob.precio} €</span>` : `<span class="text-sm text-amber-800">Consultar precio</span>`;
+                        if (modoActual === 'a_la_venta') {
+                            bloquePrecio = ob.precio === 'Consultar PVP' ? `<span class="text-sm text-amber-800">Consultar PVP</span>` : (ob.precio ? `<span class="text-lg font-bold text-amber-900">${ob.precio} €</span>` : `<span class="text-sm text-amber-800">Consultar PVP</span>`);
+                        } else {
+                            bloquePrecio = ''; // Hidden in 'Mi Obra'
+                        }
 
-                        const mensajeWa = encodeURIComponent(`Hola, estoy interesado en esta obra ${ob.material || 'Sin título'}. ¿Podría darme más información? \n\n${ob.imagen_url || window.location.href}`);
+                        const titulo = ob.material || 'Sin título';
+                        const dims = ob.dimensiones || 'Sin medidas';
+                        const precioTxt = ob.precio === 'Consultar PVP' ? 'Consultar PVP' : (ob.precio ? `${ob.precio} €` : 'Consultar PVP');
+                        let urlImagenPublica = ob.imagen_url || window.location.href;
+                        if (urlImagenPublica.startsWith('data:image')) {
+                            urlImagenPublica = 'La imagen no tiene URL pública disponible todavía, revise en la web.';
+                        }
+                        const mensajeWa = encodeURIComponent(`Hola, estoy interesado en esta obra de Raúl Hernández: ${titulo}. Dimensiones: ${dims}. Precio: ${precioTxt}. ¿Podría darme más información? \n\n${urlImagenPublica}`);
                         // The flex classes ensure it renders properly across devices and is not hidden
                         botonWhatsApp = `
                             <a href="https://wa.me/34692392620?text=${mensajeWa}" target="_blank" class="mt-4 w-full flex items-center justify-center bg-amber-900 text-white py-3 md:py-2.5 rounded-lg text-sm font-medium hover:bg-amber-800 transition-colors">
@@ -189,7 +201,11 @@
                             </a>
                         `;
                     } else if (ob.estado === 'Reservado') {
-                        bloquePrecio = ob.precio ? `<span class="text-lg font-bold text-amber-900">${ob.precio} €</span>` : '';
+                        if (modoActual === 'a_la_venta') {
+                            bloquePrecio = ob.precio === 'Consultar PVP' ? `<span class="text-sm text-amber-800">Consultar PVP</span>` : (ob.precio ? `<span class="text-lg font-bold text-amber-900">${ob.precio} €</span>` : '');
+                        } else {
+                            bloquePrecio = '';
+                        }
                     }
 
                     const card = document.createElement('div');
@@ -210,7 +226,7 @@
                                     <span class="text-[10px] px-2 py-1 bg-amber-50 text-amber-800 rounded font-medium ml-auto uppercase tracking-wider">${ob.estado || 'En colección privada'}</span>
                                 </div>
                                 ${botonWhatsApp}
-                                <a href="javascript:void(0)" onclick="abrirModalRA('${ob.imagen_url || ''}')" class="mt-2 text-center text-xs text-amber-700/80 hover:text-amber-900 flex justify-center items-center py-2 transition-colors"><i class="fas fa-cube mr-2"></i>Ver en tu pared</a>
+                                <a href="javascript:void(0)" onclick="abrirModalRA('${ob.imagen_url || ''}', '${ob.dimensiones || ''}')" class="mt-2 text-center text-xs text-amber-700/80 hover:text-amber-900 flex justify-center items-center py-2 transition-colors"><i class="fas fa-cube mr-2"></i>Ver en tu pared</a>
                             </div>
                         </div>
                     `;
@@ -225,7 +241,7 @@
                     if (modoActual === 'a_la_venta') {
                         allDocs = allDocs.filter(d => {
                             const estado = (d.data().estado || '').toLowerCase();
-                            return estado.includes('venta') || estado.includes('disponible');
+                            return estado.includes('disponible');
                         });
                     }
                     window.allDocsFiltered = allDocs;
@@ -237,22 +253,52 @@
             }
         }
 
-        function abrirModalRA(imgUrl) {
+        function abrirModalRA(imgUrl, dimensionesStr) {
             if (!imgUrl) {
                 alert("Esta obra no tiene imagen disponible para previsualizar.");
                 return;
             }
             const modal = document.getElementById('modal-ra');
-            const img = document.getElementById('modal-ra-img');
-            img.src = imgUrl;
+
+            // Extract dimensions in meters
+            let w = 0.5; // default 50cm
+            let h = 0.5;
+            if (dimensionesStr) {
+                const match = dimensionesStr.match(/^(\d+(?:\.\d+)?)\s*x\s*(\d+(?:\.\d+)?)/i);
+                if (match) {
+                    w = parseFloat(match[1]) / 100.0;
+                    h = parseFloat(match[2]) / 100.0;
+                }
+            }
+
+            const scene = document.getElementById('ar-scene');
+            // Remove previous image if exists
+            const existing = document.getElementById('ar-image-entity');
+            if (existing) {
+                existing.parentNode.removeChild(existing);
+            }
+
+            const aImg = document.createElement('a-image');
+            aImg.id = 'ar-image-entity';
+            aImg.setAttribute('src', imgUrl);
+            aImg.setAttribute('width', w);
+            aImg.setAttribute('height', h);
+            aImg.setAttribute('position', '0 1.5 -2'); // 2 meters in front of camera
+
+            scene.appendChild(aImg);
+
             modal.classList.remove('hidden');
-            modal.classList.add('flex');
+            modal.classList.add('block');
         }
 
         function cerrarModalRA() {
             const modal = document.getElementById('modal-ra');
             modal.classList.add('hidden');
-            modal.classList.remove('flex');
+            modal.classList.remove('block');
+            const scene = document.querySelector('a-scene');
+            if (scene && scene.xrSession) {
+                scene.xrSession.end();
+            }
         }
 
         window.onload = () => {
@@ -260,20 +306,16 @@
         };
     </script>
 
-    <!-- Modal RA Simulado -->
-    <div id="modal-ra" class="hidden fixed inset-0 z-[100] bg-black/80 flex items-center justify-center p-4">
-        <button onclick="cerrarModalRA()" class="absolute top-6 right-6 text-white text-3xl opacity-80 hover:opacity-100 transition"><i class="fas fa-times"></i></button>
-        <div class="relative w-full max-w-sm aspect-[3/4] bg-[#e6e2d8] rounded shadow-2xl flex flex-col items-center justify-center overflow-hidden">
-            <!-- Simulación de pared y rodapié -->
-            <div class="absolute inset-0 bg-gradient-to-b from-[#f2efea] to-[#dfdbd1]"></div>
-            <div class="absolute bottom-0 w-full h-12 bg-white border-t-2 border-[#d0cabc] shadow-inner"></div>
-            <!-- Simulación de sofá (opcional para dar escala) -->
-            <div class="absolute bottom-12 w-3/4 h-20 bg-[#6b7280] rounded-t-xl opacity-90 shadow-xl border-t border-white/20"></div>
+    <!-- Modal RA Real -->
+    <div id="modal-ra" class="hidden fixed inset-0 z-[100] bg-black">
+        <button onclick="cerrarModalRA()" class="absolute top-6 right-6 text-white text-3xl opacity-80 hover:opacity-100 transition z-[110]"><i class="fas fa-times"></i></button>
+        <p class="absolute top-4 left-4 bg-black/50 text-white text-xs px-3 py-1 rounded z-[110]">Para AR en móvil, haz click en el botón "AR" de abajo a la derecha.</p>
 
-            <!-- Obra superpuesta con sombra paralela realista -->
-            <img id="modal-ra-img" src="" class="relative z-10 max-w-[60%] max-h-[50%] object-contain shadow-[0_10px_30px_rgba(0,0,0,0.4)] transition-transform duration-300">
-            <p class="absolute top-4 bg-black/50 text-white text-[10px] px-3 py-1 rounded-full z-20 backdrop-blur-sm">Simulación de escala en pared</p>
-        </div>
+        <a-scene embedded xr-mode-ui="enabled: true" id="ar-scene" style="width:100%; height:100%;">
+            <!-- We will inject the a-image dynamically -->
+            <a-camera position="0 1.6 0"></a-camera>
+            <a-light type="ambient" color="#ffffff"></a-light>
+        </a-scene>
     </div>
 </body>
 </html>
