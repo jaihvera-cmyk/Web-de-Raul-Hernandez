@@ -4,11 +4,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <title>Gestión de Obra | Raúl Hernández</title>
-    
+
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
-    
+
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
@@ -23,7 +23,7 @@
 <body>
 
     <div id="login-view" class="max-w-sm mx-auto mt-20 p-6 bg-white border border-amber-100 rounded-xl shadow-md text-center">
-        <img src="firma.png" alt="Raúl Hernández" class="firma-header mx-auto mb-4">
+        <img src="firma_transparente.png" alt="Raúl Hernández" class="firma-header mx-auto mb-4">
         <p class="text-xs text-amber-700 uppercase tracking-widest mb-8">Gestión de Catálogo</p>
         <button onclick="loginGoogle()" class="w-full bg-amber-900 text-white py-3 rounded-lg font-medium flex items-center justify-center gap-2 hover:bg-amber-800 transition">
             <i class="fab fa-google"></i> Iniciar Sesión con Google
@@ -32,18 +32,18 @@
     </div>
 
     <div id="app-view" style="display: none;">
-        
+
         <header class="w-full border-b border-amber-200 bg-amber-900 text-white px-4 h-16 flex items-center justify-between shadow-md sticky top-0 z-50">
             <div class="bg-white px-3 py-1.5 rounded">
-               <img src="firma.png" alt="Firma" class="firma-header">
+               <img src="firma_transparente.png" alt="Firma" class="firma-header">
             </div>
             <button onclick="logout()" class="text-[10px] text-amber-200 uppercase tracking-wider bg-amber-800 px-3 py-2 rounded">Cerrar sesión</button>
         </header>
 
         <div class="max-w-2xl mx-auto px-4 py-6">
-            
+
             <div id="tab-home" class="view-panel active space-y-6">
-                
+
                 <input type="file" id="input-camara" accept="image/*" capture="environment" class="hidden" onchange="procesarFoto(this)">
                 <input type="file" id="input-galeria" accept="image/*" class="hidden" onchange="procesarFoto(this)">
 
@@ -112,10 +112,10 @@
 
             <div id="tab-form" class="view-panel">
                 <button onclick="mostrarTab('tab-home')" class="mb-4 text-sm text-gray-600 flex items-center gap-2"><i class="fas fa-arrow-left"></i> Cancelar</button>
-                
+
                 <div class="bg-white border border-amber-200 rounded-xl p-5 shadow-sm space-y-4">
                     <h2 id="form-titulo" class="text-lg font-semibold text-amber-950 mb-2">Ficha de Obra</h2>
-                    
+
                     <input type="hidden" id="obra-id">
                     <input type="hidden" id="obra-img-b64">
 
@@ -139,7 +139,7 @@
                     </div>
 
                     <div>
-                        <label class="block text-xs font-semibold text-gray-600 mb-1">Descripción de la obra (SEO)</label>
+                        <label class="block text-xs font-semibold text-gray-600 mb-1">Descripción visual (SEO)</label>
                         <textarea id="obra-descripcion" rows="2" placeholder="Ej: Abstracción geométrica en tonos cálidos y rojizos con textura matérica." class="w-full border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:border-amber-500"></textarea>
                     </div>
 
@@ -150,14 +150,6 @@
                             <option value="Disponible para la venta">Disponible para la venta</option>
                             <option value="Reservado">Reservado</option>
                         </select>
-                    </div>
-
-                    <div class="bg-gray-50 p-3 rounded border border-gray-200">
-                        <label class="block text-xs font-semibold text-gray-600 mb-2">Aparece en sección:</label>
-                        <div class="flex gap-4 text-sm">
-                            <label class="flex items-center gap-1"><input type="checkbox" id="check-mi-obra" checked> Mi Obra</label>
-                            <label class="flex items-center gap-1"><input type="checkbox" id="check-venta"> A la Venta</label>
-                        </div>
                     </div>
 
                     <div class="pt-4 space-y-2">
@@ -233,14 +225,14 @@
                     img.src = event.target.result;
                     img.onload = () => {
                         const canvas = document.createElement('canvas');
-                        const MAX_WIDTH = 800; 
+                        const MAX_WIDTH = 800;
                         const scaleSize = MAX_WIDTH / img.width;
                         canvas.width = MAX_WIDTH;
                         canvas.height = img.height * scaleSize;
-                        
+
                         const ctx = canvas.getContext('2d');
                         ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-                        
+
                         const b64 = canvas.toDataURL('image/jpeg', 0.7);
 
                         document.getElementById('obra-id').value = '';
@@ -248,12 +240,10 @@
                         document.getElementById('obra-material').value = '';
                         document.getElementById('obra-dimensiones').value = '';
                         document.getElementById('obra-precio').value = '';
-                        document.getElementById('obra-descripcion').value = ''; 
+                        document.getElementById('obra-descripcion').value = '';
                         document.getElementById('obra-estado').value = 'En colección privada';
-                        document.getElementById('check-mi-obra').checked = true;
-                        document.getElementById('check-venta').checked = false;
                         document.getElementById('btn-eliminar-obra').style.display = 'none';
-                        
+
                         document.getElementById('obra-img-b64').value = b64;
                         const prev = document.getElementById('form-preview');
                         prev.src = b64;
@@ -263,16 +253,18 @@
                     }
                 }
             }
-            input.value = ''; 
+            input.value = '';
         }
 
         function abrirCatalogo(tipo) {
             document.getElementById('lista-titulo').innerText = tipo === 'mi_obra' ? 'Editando: Mi Obra' : 'Editando: A la Venta';
             mostrarTab('tab-lista');
 
-            db.collection('cuadros')
-              .where('destino', 'array-contains', tipo)
-              .onSnapshot(snap => {
+            let query = db.collection('cuadros');
+            if (tipo === 'a_la_venta') {
+                query = query.where('estado', '==', 'Disponible para la venta');
+            }
+            query.onSnapshot(snap => {
                   const container = document.getElementById('obras-container');
                   container.innerHTML = '';
                   if (snap.empty) {
@@ -283,7 +275,7 @@
                       const d = doc.data();
                       const mat = d.material || 'Técnica mixta';
                       const dim = d.dimensiones || 'Sin medidas';
-                      
+
                       const card = document.createElement('div');
                       card.className = 'bg-white border border-gray-200 rounded-lg p-3 flex gap-4 items-center shadow-sm cursor-pointer hover:border-amber-400';
                       card.innerHTML = `
@@ -309,13 +301,9 @@
             document.getElementById('obra-material').value = d.material || '';
             document.getElementById('obra-dimensiones').value = d.dimensiones || '';
             document.getElementById('obra-precio').value = d.precio || '';
-            document.getElementById('obra-descripcion').value = d.descripcion || ''; 
+            document.getElementById('obra-descripcion').value = d.descripcion || '';
             document.getElementById('obra-estado').value = d.estado || 'En colección privada';
-            
-            const destinos = d.destino || [];
-            document.getElementById('check-mi-obra').checked = destinos.includes('mi_obra');
-            document.getElementById('check-venta').checked = destinos.includes('a_la_venta');
-            
+
             const prev = document.getElementById('form-preview');
             if (d.imagen_url) {
                 prev.src = d.imagen_url;
@@ -331,9 +319,6 @@
 
         async function guardarObra() {
             const id = document.getElementById('obra-id').value;
-            const destinos = [];
-            if (document.getElementById('check-mi-obra').checked) destinos.push('mi_obra');
-            if (document.getElementById('check-venta').checked) destinos.push('a_la_venta');
 
             const payload = {
                 material: document.getElementById('obra-material').value.trim(),
@@ -341,7 +326,6 @@
                 precio: parseFloat(document.getElementById('obra-precio').value) || null,
                 descripcion: document.getElementById('obra-descripcion').value.trim(),
                 estado: document.getElementById('obra-estado').value,
-                destino: destinos,
                 imagen_url: document.getElementById('obra-img-b64').value,
                 fecha_actualizacion: firebase.firestore.FieldValue.serverTimestamp()
             };
