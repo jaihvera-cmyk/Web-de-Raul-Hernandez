@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Raúl Hernández | Pintura de Autor y Arte Abstracto</title>
+    <meta name="description" content="Catálogo oficial de obra pictórica de Raúl Hernández. Pintura abstracta, de autor y piezas únicas expuestas en el corazón de Madrid.">
+    <meta name="keywords" content="pintura de autor, pintura abstracta, arte contemporáneo, antigüedades, Rastro de Madrid, cuadros exclusivos, Raúl Hernández">
+    <meta name="google-site-verification" content="bYtIssCyfnDdpcjWtlAM6_YX-2mxLPdDyN2o8_TRpWI" />
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+    
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+
+    <style>
+        body { font-family: 'Inter', sans-serif; background-color: #fcf9f5; color: #2c2c2c; }
+        h1, h2, h3 { font-family: 'Playfair Display', serif; }
+        .firma-header { mix-blend-mode: multiply; max-height: 40px; }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+        .nav-btn { color: #92400e; padding-bottom: 4px; border-bottom: 2px solid transparent; transition: all 0.2s; }
+        .nav-btn.active { border-color: #92400e; font-weight: 500; }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col justify-between">
+
+    <header class="w-full border-b border-amber-100 bg-white/80 backdrop-blur-md sticky top-0 z-50 shadow-sm">
+        <div class="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
+            <div class="flex flex-col justify-center">
+                <img src="firma.png" alt="Raúl Hernández" class="firma-header mb-1">
+                <p class="text-[10px] text-amber-700 tracking-[0.2em] uppercase font-medium">Pintura de Autor</p>
+            </div>
+            <div class="flex items-center space-x-6">
+                <a href="https://instagram.com/raulhernandezme" target="_blank" rel="noopener noreferrer" class="text-amber-800 hover:text-amber-600 transition-colors flex items-center gap-2 bg-amber-50 px-3 py-1.5 rounded-full border border-amber-200 text-sm font-medium">
+                    <i class="fab fa-instagram text-lg"></i>
+                    <span class="hidden sm:inline">@raulhernandezme</span>
+                </a>
+            </div>
+        </div>
+        
+        <nav class="max-w-7xl mx-auto px-6 flex justify-center gap-8 pt-3 pb-0 text-sm">
+            <button class="nav-btn active" onclick="cambiarSeccion('mi_obra', this)">Mi Obra</button>
+            <button class="nav-btn" onclick="cambiarSeccion('a_la_venta', this)">A la Venta</button>
+            <button class="nav-btn" onclick="cambiarSeccion('quien_soy', this)">Quién Soy</button>
+        </nav>
+    </header>
+
+    <main class="max-w-7xl mx-auto px-6 py-12 flex-grow w-full">
+        <div id="seccion-galeria" class="tab-content active">
+            <div id="galeria-grid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8">
+                <div class="col-span-full text-center py-10 text-amber-800/60"><i class="fas fa-spinner fa-spin mr-2"></i> Cargando catálogo...</div>
+            </div>
+        </div>
+
+        <div id="seccion-quien-soy" class="tab-content">
+            <div class="max-w-2xl mx-auto bg-white p-8 md:p-12 border border-amber-100 rounded-xl shadow-sm">
+                <h2 class="text-3xl text-amber-950 mb-6 text-center">Sobre el Artista</h2>
+                <div id="bio-texto-publico" class="text-gray-700 leading-relaxed whitespace-pre-line text-sm md:text-base">
+                    Cargando biografía...
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer class="border-t border-amber-100 bg-amber-900 text-amber-50 py-10 mt-10">
+        <div class="max-w-7xl mx-auto px-6 flex flex-col md:flex-row justify-between items-center text-center md:text-left gap-6">
+            <div>
+                <p class="text-sm font-medium tracking-wide">Raúl Hernández — Estudio</p>
+                <p class="text-xs text-amber-200/80 mt-1">Nuevas Galerías del Rastro · Ribera de Curtidores, 12, Madrid</p>
+            </div>
+            <div class="text-xs text-amber-300/60 flex flex-col items-center md:items-end gap-2">
+                <a href="https://instagram.com/raulhernandezme" target="_blank" class="hover:text-white transition-colors"><i class="fab fa-instagram text-lg"></i></a>
+                &copy; 2026 Raúl Hernández. Todos los derechos reservados.
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyC1ckj1bXOryXqZ1nAK0xO3FdG08k7cBqc",
+            authDomain: "obra-de-raul-hernandez.firebaseapp.com",
+            projectId: "obra-de-raul-hernandez",
+            storageBucket: "obra-de-raul-hernandez.firebasestorage.app"
+        };
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+
+        let modoActual = 'mi_obra';
+
+        function cambiarSeccion(seccion, boton) {
+            document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+            boton.classList.add('active');
+
+            if (seccion === 'quien_soy') {
+                document.getElementById('seccion-galeria').classList.remove('active');
+                document.getElementById('seccion-quien-soy').classList.add('active');
+                cargarBio();
+            } else {
+                document.getElementById('seccion-quien-soy').classList.remove('active');
+                document.getElementById('seccion-galeria').classList.add('active');
+                modoActual = seccion;
+                cargarGaleria();
+            }
+        }
+
+        function cargarBio() {
+            db.collection('configuracion').doc('general').get().then(doc => {
+                const caja = document.getElementById('bio-texto-publico');
+                if (doc.exists && doc.data().biografia) {
+                    caja.innerText = doc.data().biografia;
+                } else {
+                    caja.innerHTML = '<p class="text-center italic text-gray-400">Biografía en preparación.</p>';
+                }
+            });
+        }
+
+        function cargarGaleria() {
+            const grid = document.getElementById('galeria-grid');
+            grid.innerHTML = '<div class="col-span-full text-center py-10 text-amber-800/60"><i class="fas fa-spinner fa-spin mr-2"></i> Cargando obras...</div>';
+
+            db.collection('cuadros')
+              .where('destino', 'array-contains', modoActual)
+              .orderBy('fecha_actualizacion', 'desc')
+              .get()
+              .then(snap => {
+                  grid.innerHTML = '';
+                  if (snap.empty) {
+                      grid.innerHTML = '<div class="col-span-full text-center py-10 text-gray-500">No hay obras disponibles en esta sección actualmente.</div>';
+                      return;
+                  }
+
+                  snap.forEach(doc => {
+                      const ob = doc.data();
+                      
+                      const textoAlt = ob.material ? `Cuadro de Raúl Hernández - ${ob.material}` : 'Obra abstracta de Raúl Hernández';
+                      const descripcionHtml = ob.descripcion ? `<p class="text-sm text-amber-900/80 mt-2 mb-2 italic">"${ob.descripcion}"</p>` : '';
+                      
+                      let bloquePrecio = '';
+                      let botonWhatsApp = '';
+                      
+                      if (ob.estado === 'Disponible para la venta') {
+                          bloquePrecio = ob.precio ? `<span class="text-lg font-bold text-amber-900">${ob.precio} €</span>` : `<span class="text-sm text-amber-800">Consultar precio</span>`;
+                          
+                          const mensajeWa = encodeURIComponent(`Hola, estaba viendo tu web y me interesa informarme sobre esta obra (${ob.material || 'Sin título'} / ${ob.dimensiones || 'Medidas no esp.'}). ¿Sigue disponible?`);
+                          botonWhatsApp = `
+                              <a href="https://wa.me/34692392620?text=${mensajeWa}" target="_blank" class="mt-4 w-full block text-center bg-amber-900 text-white py-2.5 rounded-lg text-sm font-medium hover:bg-amber-800 transition-colors">
+                                  <i class="fab fa-whatsapp mr-1"></i> Consultar disponibilidad
+                              </a>
+                          `;
+                      } else if (ob.estado === 'Reservado') {
+                          bloquePrecio = ob.precio ? `<span class="text-lg font-bold text-amber-900">${ob.precio} €</span>` : '';
+                      }
+
+                      const card = document.createElement('div');
+                      card.className = "bg-white border border-amber-100 rounded-xl overflow-hidden shadow-sm flex flex-col hover:shadow-md transition-shadow";
+                      card.innerHTML = `
+                          <div class="h-64 bg-amber-50 overflow-hidden flex items-center justify-center relative group">
+                              ${ob.imagen_url ? `<img src="${ob.imagen_url}" alt="${textoAlt}" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105">` : `<i class="fas fa-image text-amber-200 text-4xl"></i>`}
+                          </div>
+                          <div class="p-5 flex-grow flex flex-col justify-between">
+                              <div>
+                                  <p class="text-xs text-amber-700 font-medium uppercase tracking-wider mb-1">${ob.material || 'Técnica mixta'}</p>
+                                  <h3 class="text-base font-semibold text-amber-950 mb-1">${ob.dimensiones || 'Dimensiones no esp.'}</h3>
+                                  ${descripcionHtml}
+                              </div>
+                              <div class="mt-4 pt-3 border-t border-gray-100 w-full">
+                                  <div class="flex justify-between items-center">
+                                      ${bloquePrecio}
+                                      <span class="text-[10px] px-2 py-1 bg-amber-50 text-amber-800 rounded font-medium ml-auto uppercase tracking-wider">${ob.estado || 'En colección privada'}</span>
+                                  </div>
+                                  ${botonWhatsApp}
+                              </div>
+                          </div>
+                      `;
+                      grid.appendChild(card);
+                  });
+              });
+        }
+
+        window.onload = () => {
+            cargarGaleria();
+        };
+    </script>
+</body>
+</html>
