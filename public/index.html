@@ -130,7 +130,11 @@
 
                     <div>
                         <label class="block text-xs font-semibold text-gray-600 mb-1">Dimensiones (cm)</label>
-                        <input type="text" id="obra-dimensiones" class="w-full border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:border-amber-500" placeholder="Ej: 100 x 80 cm">
+                        <div class="flex items-center gap-2">
+                            <input type="number" id="obra-ancho" class="w-full border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:border-amber-500" placeholder="Ancho">
+                            <span class="text-gray-500 font-medium">x</span>
+                            <input type="number" id="obra-alto" class="w-full border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:border-amber-500" placeholder="Alto">
+                        </div>
                     </div>
 
                     <div>
@@ -238,7 +242,8 @@
                         document.getElementById('obra-id').value = '';
                         document.getElementById('form-titulo').innerText = 'Registrar Nueva Obra';
                         document.getElementById('obra-material').value = '';
-                        document.getElementById('obra-dimensiones').value = '';
+                        document.getElementById('obra-ancho').value = '';
+                        document.getElementById('obra-alto').value = '';
                         document.getElementById('obra-precio').value = '';
                         document.getElementById('obra-descripcion').value = '';
                         document.getElementById('obra-estado').value = 'En colección privada';
@@ -299,7 +304,20 @@
             document.getElementById('obra-id').value = id;
             document.getElementById('form-titulo').innerText = 'Editar Obra';
             document.getElementById('obra-material').value = d.material || '';
-            document.getElementById('obra-dimensiones').value = d.dimensiones || '';
+
+            let ancho = '';
+            let alto = '';
+            if (d.dimensiones) {
+                // Parse standard format like "100 x 80 cm"
+                const match = d.dimensiones.match(/^(\d+(?:\.\d+)?)\s*x\s*(\d+(?:\.\d+)?)/i);
+                if (match) {
+                    ancho = match[1];
+                    alto = match[2];
+                }
+            }
+            document.getElementById('obra-ancho').value = ancho;
+            document.getElementById('obra-alto').value = alto;
+
             document.getElementById('obra-precio').value = d.precio || '';
             document.getElementById('obra-descripcion').value = d.descripcion || '';
             document.getElementById('obra-estado').value = d.estado || 'En colección privada';
@@ -320,9 +338,16 @@
         async function guardarObra() {
             const id = document.getElementById('obra-id').value;
 
+            const ancho = document.getElementById('obra-ancho').value.trim();
+            const alto = document.getElementById('obra-alto').value.trim();
+            let dimensionesStr = '';
+            if (ancho && alto) {
+                dimensionesStr = `${ancho} x ${alto} cm`;
+            }
+
             const payload = {
                 material: document.getElementById('obra-material').value.trim(),
-                dimensiones: document.getElementById('obra-dimensiones').value.trim(),
+                dimensiones: dimensionesStr,
                 precio: parseFloat(document.getElementById('obra-precio').value) || null,
                 descripcion: document.getElementById('obra-descripcion').value.trim(),
                 estado: document.getElementById('obra-estado').value,

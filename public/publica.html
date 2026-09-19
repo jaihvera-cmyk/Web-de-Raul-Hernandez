@@ -142,88 +142,138 @@
             }
 
             let query = db.collection('cuadros');
-            if (modoActual === 'a_la_venta') {
-                query = query.where('estado', '==', 'Disponible para la venta');
+
+            // To support case-insensitive "includes" logic, we must fetch everything
+            // and filter client-side since Firestore does not support this natively.
+            // For a gallery, this is usually acceptable.
+            // We remove the limit() and startAfter() since client-side filtering breaks standard pagination.
+            // We'll simulate pagination client-side.
+
+            const renderDocs = () => {
+                const pageSize = 12;
+                const docsToShow = window.allDocsFiltered.slice(window.currentDisplayCount, window.currentDisplayCount + pageSize);
+
+                if (window.allDocsFiltered.length === 0 && esNuevaCarga) {
+                    grid.innerHTML = '<div class="col-span-full text-center py-10 text-gray-500">No hay obras disponibles en esta sección actualmente.</div>';
+                    return;
+                }
+
+                window.currentDisplayCount += docsToShow.length;
+
+                if (window.currentDisplayCount < window.allDocsFiltered.length && btnCargarMas) {
+                    btnCargarMas.classList.remove('hidden');
+                } else if (btnCargarMas) {
+                    btnCargarMas.classList.add('hidden');
+                }
+
+                docsToShow.forEach(doc => {
+                    const ob = doc.data();
+
+                    const textoAlt = `Cuadro de Raúl Hernández - ${ob.material || 'Técnica mixta'} - ${ob.dimensiones || 'Sin medidas'}`;
+                    const descripcionHtml = ob.descripcion ? `<p class="text-sm text-amber-900/80 mt-2 mb-2 italic line-clamp-2" style="display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;">"${ob.descripcion}"</p>` : '';
+
+                    let bloquePrecio = '';
+                    let botonWhatsApp = '';
+
+                    const estadoObra = (ob.estado || '').toLowerCase();
+                    const estaEnVenta = estadoObra.includes('venta') || estadoObra.includes('disponible');
+
+                    if (estaEnVenta) {
+                        bloquePrecio = ob.precio ? `<span class="text-lg font-bold text-amber-900">${ob.precio} €</span>` : `<span class="text-sm text-amber-800">Consultar precio</span>`;
+
+                        const mensajeWa = encodeURIComponent(`Hola, estoy interesado en esta obra ${ob.material || 'Sin título'}. ¿Podría darme más información? \n\n${ob.imagen_url || window.location.href}`);
+                        // The flex classes ensure it renders properly across devices and is not hidden
+                        botonWhatsApp = `
+                            <a href="https://wa.me/34692392620?text=${mensajeWa}" target="_blank" class="mt-4 w-full flex items-center justify-center bg-amber-900 text-white py-3 md:py-2.5 rounded-lg text-sm font-medium hover:bg-amber-800 transition-colors">
+                                <i class="fab fa-whatsapp mr-2 text-base md:text-sm md:mr-1"></i> Consultar disponibilidad
+                            </a>
+                        `;
+                    } else if (ob.estado === 'Reservado') {
+                        bloquePrecio = ob.precio ? `<span class="text-lg font-bold text-amber-900">${ob.precio} €</span>` : '';
+                    }
+
+                    const card = document.createElement('div');
+                    card.className = "bg-white border border-amber-100 rounded-xl overflow-hidden shadow-sm flex flex-col hover:shadow-md transition-shadow";
+                    card.innerHTML = `
+                        <div class="h-64 bg-amber-50 overflow-hidden flex items-center justify-center relative group">
+                            ${ob.imagen_url ? `<img src="${ob.imagen_url}" alt="${textoAlt}" class="w-full h-full object-contain transition-transform duration-500 group-hover:scale-105">` : `<i class="fas fa-image text-amber-200 text-4xl"></i>`}
+                        </div>
+                        <div class="p-5 flex-grow flex flex-col justify-between">
+                            <div>
+                                <p class="text-xs text-amber-700 font-medium uppercase tracking-wider mb-1">${ob.material || 'Técnica mixta'}</p>
+                                <h3 class="text-base font-semibold text-amber-950 mb-1">${ob.dimensiones || 'Dimensiones no esp.'}</h3>
+                                ${descripcionHtml}
+                            </div>
+                            <div class="mt-4 pt-3 border-t border-gray-100 w-full">
+                                <div class="flex justify-between items-center">
+                                    ${bloquePrecio}
+                                    <span class="text-[10px] px-2 py-1 bg-amber-50 text-amber-800 rounded font-medium ml-auto uppercase tracking-wider">${ob.estado || 'En colección privada'}</span>
+                                </div>
+                                ${botonWhatsApp}
+                                <a href="javascript:void(0)" onclick="abrirModalRA('${ob.imagen_url || ''}')" class="mt-2 text-center text-xs text-amber-700/80 hover:text-amber-900 flex justify-center items-center py-2 transition-colors"><i class="fas fa-cube mr-2"></i>Ver en tu pared</a>
+                            </div>
+                        </div>
+                    `;
+                    grid.appendChild(card);
+                });
+            };
+
+            if (esNuevaCarga) {
+                query.get().then(snap => {
+                    grid.innerHTML = '';
+                    let allDocs = snap.docs;
+                    if (modoActual === 'a_la_venta') {
+                        allDocs = allDocs.filter(d => {
+                            const estado = (d.data().estado || '').toLowerCase();
+                            return estado.includes('venta') || estado.includes('disponible');
+                        });
+                    }
+                    window.allDocsFiltered = allDocs;
+                    window.currentDisplayCount = 0;
+                    renderDocs();
+                });
+            } else {
+                renderDocs();
             }
+        }
 
-            query = query.limit(12);
-            if (!esNuevaCarga && ultimoDocumento) {
-                query = query.startAfter(ultimoDocumento);
+        function abrirModalRA(imgUrl) {
+            if (!imgUrl) {
+                alert("Esta obra no tiene imagen disponible para previsualizar.");
+                return;
             }
+            const modal = document.getElementById('modal-ra');
+            const img = document.getElementById('modal-ra-img');
+            img.src = imgUrl;
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+        }
 
-            query.get()
-              .then(snap => {
-                  if (esNuevaCarga) {
-                      grid.innerHTML = '';
-                  }
-
-                  if (snap.empty && esNuevaCarga) {
-                      grid.innerHTML = '<div class="col-span-full text-center py-10 text-gray-500">No hay obras disponibles en esta sección actualmente.</div>';
-                      return;
-                  }
-
-                  if (!snap.empty) {
-                      ultimoDocumento = snap.docs[snap.docs.length - 1];
-                  }
-
-                  if (snap.docs.length === 12 && btnCargarMas) {
-                      btnCargarMas.classList.remove('hidden');
-                  } else if (btnCargarMas) {
-                      btnCargarMas.classList.add('hidden');
-                  }
-
-                  snap.forEach(doc => {
-                      const ob = doc.data();
-
-                      const textoAlt = `Cuadro de Raúl Hernández - ${ob.material || 'Técnica mixta'} - ${ob.dimensiones || 'Sin medidas'}`;
-                      const descripcionHtml = ob.descripcion ? `<p class="text-sm text-amber-900/80 mt-2 mb-2 italic line-clamp-2" style="display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;">"${ob.descripcion}"</p>` : '';
-
-                      let bloquePrecio = '';
-                      let botonWhatsApp = '';
-
-                      if (ob.estado === 'Disponible para la venta') {
-                          bloquePrecio = ob.precio ? `<span class="text-lg font-bold text-amber-900">${ob.precio} €</span>` : `<span class="text-sm text-amber-800">Consultar precio</span>`;
-
-                          const mensajeWa = encodeURIComponent(`Hola, estoy interesado en esta obra ${ob.material || 'Sin título'}. ¿Podría darme más información? \n\n${ob.imagen_url || window.location.href}`);
-                          botonWhatsApp = `
-                              <a href="https://wa.me/34692392620?text=${mensajeWa}" target="_blank" class="mt-4 w-full block text-center bg-amber-900 text-white py-2.5 rounded-lg text-sm font-medium hover:bg-amber-800 transition-colors">
-                                  <i class="fab fa-whatsapp mr-1"></i> Consultar disponibilidad
-                              </a>
-                          `;
-                      } else if (ob.estado === 'Reservado') {
-                          bloquePrecio = ob.precio ? `<span class="text-lg font-bold text-amber-900">${ob.precio} €</span>` : '';
-                      }
-
-                      const card = document.createElement('div');
-                      card.className = "bg-white border border-amber-100 rounded-xl overflow-hidden shadow-sm flex flex-col hover:shadow-md transition-shadow";
-                      card.innerHTML = `
-                          <div class="h-64 bg-amber-50 overflow-hidden flex items-center justify-center relative group">
-                              ${ob.imagen_url ? `<img src="${ob.imagen_url}" alt="${textoAlt}" class="w-full h-full object-contain transition-transform duration-500 group-hover:scale-105">` : `<i class="fas fa-image text-amber-200 text-4xl"></i>`}
-                          </div>
-                          <div class="p-5 flex-grow flex flex-col justify-between">
-                              <div>
-                                  <p class="text-xs text-amber-700 font-medium uppercase tracking-wider mb-1">${ob.material || 'Técnica mixta'}</p>
-                                  <h3 class="text-base font-semibold text-amber-950 mb-1">${ob.dimensiones || 'Dimensiones no esp.'}</h3>
-                                  ${descripcionHtml}
-                              </div>
-                              <div class="mt-4 pt-3 border-t border-gray-100 w-full">
-                                  <div class="flex justify-between items-center">
-                                      ${bloquePrecio}
-                                      <span class="text-[10px] px-2 py-1 bg-amber-50 text-amber-800 rounded font-medium ml-auto uppercase tracking-wider">${ob.estado || 'En colección privada'}</span>
-                                  </div>
-                                  ${botonWhatsApp}
-                                  <a href="#" class="mt-2 text-center text-xs text-amber-700/80 hover:text-amber-900 block transition-colors" title="Previsualización en desarrollo"><i class="fas fa-cube mr-1"></i>Ver en tu pared (RA)</a>
-                              </div>
-                          </div>
-                      `;
-                      grid.appendChild(card);
-                  });
-              });
+        function cerrarModalRA() {
+            const modal = document.getElementById('modal-ra');
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
         }
 
         window.onload = () => {
             cargarGaleria(true);
         };
     </script>
+
+    <!-- Modal RA Simulado -->
+    <div id="modal-ra" class="hidden fixed inset-0 z-[100] bg-black/80 flex items-center justify-center p-4">
+        <button onclick="cerrarModalRA()" class="absolute top-6 right-6 text-white text-3xl opacity-80 hover:opacity-100 transition"><i class="fas fa-times"></i></button>
+        <div class="relative w-full max-w-sm aspect-[3/4] bg-[#e6e2d8] rounded shadow-2xl flex flex-col items-center justify-center overflow-hidden">
+            <!-- Simulación de pared y rodapié -->
+            <div class="absolute inset-0 bg-gradient-to-b from-[#f2efea] to-[#dfdbd1]"></div>
+            <div class="absolute bottom-0 w-full h-12 bg-white border-t-2 border-[#d0cabc] shadow-inner"></div>
+            <!-- Simulación de sofá (opcional para dar escala) -->
+            <div class="absolute bottom-12 w-3/4 h-20 bg-[#6b7280] rounded-t-xl opacity-90 shadow-xl border-t border-white/20"></div>
+
+            <!-- Obra superpuesta con sombra paralela realista -->
+            <img id="modal-ra-img" src="" class="relative z-10 max-w-[60%] max-h-[50%] object-contain shadow-[0_10px_30px_rgba(0,0,0,0.4)] transition-transform duration-300">
+            <p class="absolute top-4 bg-black/50 text-white text-[10px] px-3 py-1 rounded-full z-20 backdrop-blur-sm">Simulación de escala en pared</p>
+        </div>
+    </div>
 </body>
 </html>
