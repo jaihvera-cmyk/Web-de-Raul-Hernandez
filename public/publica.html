@@ -133,7 +133,6 @@
 
             db.collection('cuadros')
               .where('destino', 'array-contains', modoActual)
-              .orderBy('fecha_actualizacion', 'desc')
               .get()
               .then(snap => {
                   grid.innerHTML = '';
