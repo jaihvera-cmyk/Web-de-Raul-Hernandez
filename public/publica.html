@@ -242,17 +242,31 @@
                 alert("Esta obra no tiene imagen disponible para previsualizar.");
                 return;
             }
-            const modal = document.getElementById('modal-ra');
-            const img = document.getElementById('modal-ra-img');
-            img.src = imgUrl;
-            modal.classList.remove('hidden');
-            modal.classList.add('flex');
+
+            // Detect desktop via screen width (Tailwind's md breakpoint is 768px)
+            if (window.innerWidth > 768) {
+                const modalDesktop = document.getElementById('modal-desktop-info');
+                modalDesktop.classList.remove('hidden');
+                modalDesktop.classList.add('flex');
+            } else {
+                const modal = document.getElementById('modal-ra');
+                const img = document.getElementById('modal-ra-img');
+                img.src = imgUrl;
+                modal.classList.remove('hidden');
+                modal.classList.add('flex');
+            }
         }
 
         function cerrarModalRA() {
             const modal = document.getElementById('modal-ra');
             modal.classList.add('hidden');
             modal.classList.remove('flex');
+        }
+
+        function cerrarModalDesktopInfo() {
+            const modalDesktop = document.getElementById('modal-desktop-info');
+            modalDesktop.classList.add('hidden');
+            modalDesktop.classList.remove('flex');
         }
 
         window.onload = () => {
@@ -273,6 +287,23 @@
             <!-- Obra superpuesta con sombra paralela realista -->
             <img id="modal-ra-img" src="" class="relative z-10 max-w-[60%] max-h-[50%] object-contain shadow-[0_10px_30px_rgba(0,0,0,0.4)] transition-transform duration-300">
             <p class="absolute top-4 bg-black/50 text-white text-[10px] px-3 py-1 rounded-full z-20 backdrop-blur-sm">Simulación de escala en pared</p>
+        </div>
+    </div>
+
+    <!-- Modal Desktop Info -->
+    <div id="modal-desktop-info" class="hidden fixed inset-0 z-[100] bg-black/60 backdrop-blur-sm flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl shadow-2xl max-w-md w-full p-8 text-center relative">
+            <button onclick="cerrarModalDesktopInfo()" class="absolute top-4 right-4 text-gray-400 hover:text-amber-900 transition"><i class="fas fa-times text-xl"></i></button>
+            <div class="w-20 h-20 bg-amber-50 rounded-full flex items-center justify-center mx-auto mb-6">
+                <i class="fas fa-mobile-alt text-4xl text-amber-600"></i>
+            </div>
+            <h3 class="text-2xl font-semibold text-amber-950 mb-3">Escala en tu pared</h3>
+            <p class="text-gray-600 mb-8 leading-relaxed">
+                Esta experiencia está optimizada para dispositivos móviles. Coge tu smartphone, accede a esta misma web y podrás ver una simulación visual de la obra a tamaño real sobre una pared neutra.
+            </p>
+            <button onclick="cerrarModalDesktopInfo()" class="w-full bg-amber-900 text-white py-3 rounded-xl font-medium hover:bg-amber-800 transition shadow-md">
+                Entendido
+            </button>
         </div>
     </div>
 </body>
