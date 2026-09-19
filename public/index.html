@@ -12,6 +12,7 @@
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-storage-compat.js"></script>
 
     <style>
         body { font-family: 'Inter', sans-serif; background-color: #fdfbf7; color: #2d2d2d; padding-bottom: 40px; }
@@ -138,8 +139,21 @@
                     </div>
 
                     <div>
-                        <label class="block text-xs font-semibold text-gray-600 mb-1">Precio (€) - Opcional</label>
-                        <input type="number" id="obra-precio" class="w-full border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:border-amber-500" placeholder="Ej: 650">
+                        <label class="block text-xs font-semibold text-gray-600 mb-2">Precio</label>
+                        <div class="flex items-center gap-4 mb-2">
+                            <label class="flex items-center gap-2 text-sm text-gray-700">
+                                <input type="radio" name="tipo-precio" value="consultar" id="precio-consultar" class="accent-amber-600" checked onchange="togglePrecioInput()">
+                                Consultar PVP
+                            </label>
+                            <label class="flex items-center gap-2 text-sm text-gray-700">
+                                <input type="radio" name="tipo-precio" value="manual" id="precio-manual" class="accent-amber-600" onchange="togglePrecioInput()">
+                                Precio Manual
+                            </label>
+                        </div>
+                        <div id="contenedor-precio-manual" class="hidden relative">
+                            <input type="text" id="obra-precio" class="w-full border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:border-amber-500 pr-8" placeholder="Ej: 650" oninput="this.value = this.value.replace(/[^0-9]/g, '')">
+                            <span class="absolute right-3 top-2 text-gray-500 font-medium">€</span>
+                        </div>
                     </div>
 
                     <div>
@@ -186,6 +200,7 @@
         firebase.initializeApp(firebaseConfig);
         const auth = firebase.auth();
         const db = firebase.firestore();
+        const storage = firebase.storage();
 
         const WHITELIST = ['raulgomero@gmail.com', 'jaihvera@gmail.com'];
 
@@ -219,6 +234,16 @@
             window.scrollTo(0,0);
         }
 
+        function togglePrecioInput() {
+            const manualSeleccionado = document.getElementById('precio-manual').checked;
+            const contenedor = document.getElementById('contenedor-precio-manual');
+            if (manualSeleccionado) {
+                contenedor.classList.remove('hidden');
+            } else {
+                contenedor.classList.add('hidden');
+            }
+        }
+
         function procesarFoto(input) {
             if (input.files && input.files[0]) {
                 const file = input.files[0];
@@ -244,7 +269,9 @@
                         document.getElementById('obra-material').value = '';
                         document.getElementById('obra-ancho').value = '';
                         document.getElementById('obra-alto').value = '';
+                        document.getElementById('precio-consultar').checked = true;
                         document.getElementById('obra-precio').value = '';
+                        togglePrecioInput();
                         document.getElementById('obra-descripcion').value = '';
                         document.getElementById('obra-estado').value = 'En colección privada';
                         document.getElementById('btn-eliminar-obra').style.display = 'none';
@@ -266,18 +293,23 @@
             mostrarTab('tab-lista');
 
             let query = db.collection('cuadros');
-            if (tipo === 'a_la_venta') {
-                query = query.where('estado', '==', 'Disponible para la venta');
-            }
+
             query.onSnapshot(snap => {
                   const container = document.getElementById('obras-container');
                   container.innerHTML = '';
-                  if (snap.empty) {
-                      container.innerHTML = '<p class="text-sm text-gray-500 p-4 bg-white rounded border border-gray-200 text-center">No hay obras registradas aquí.</p>';
-                      return;
-                  }
+                  let count = 0;
+
                   snap.forEach(doc => {
                       const d = doc.data();
+
+                      if (tipo === 'a_la_venta') {
+                          const estado = (d.estado || '').toLowerCase();
+                          if (!estado.includes('disponible')) {
+                              return; // Skip if not disponible
+                          }
+                      }
+
+                      count++;
                       const mat = d.material || 'Técnica mixta';
                       const dim = d.dimensiones || 'Sin medidas';
 
@@ -297,6 +329,10 @@
                       card.onclick = () => cargarObraParaEditar(doc.id, d);
                       container.appendChild(card);
                   });
+
+                  if (count === 0) {
+                      container.innerHTML = '<p class="text-sm text-gray-500 p-4 bg-white rounded border border-gray-200 text-center">No hay obras registradas aquí.</p>';
+                  }
               });
         }
 
@@ -318,7 +354,15 @@
             document.getElementById('obra-ancho').value = ancho;
             document.getElementById('obra-alto').value = alto;
 
-            document.getElementById('obra-precio').value = d.precio || '';
+            if (d.precio === 'Consultar PVP' || !d.precio) {
+                document.getElementById('precio-consultar').checked = true;
+                document.getElementById('obra-precio').value = '';
+            } else {
+                document.getElementById('precio-manual').checked = true;
+                document.getElementById('obra-precio').value = d.precio;
+            }
+            togglePrecioInput();
+
             document.getElementById('obra-descripcion').value = d.descripcion || '';
             document.getElementById('obra-estado').value = d.estado || 'En colección privada';
 
@@ -345,17 +389,39 @@
                 dimensionesStr = `${ancho} x ${alto} cm`;
             }
 
-            const payload = {
-                material: document.getElementById('obra-material').value.trim(),
-                dimensiones: dimensionesStr,
-                precio: parseFloat(document.getElementById('obra-precio').value) || null,
-                descripcion: document.getElementById('obra-descripcion').value.trim(),
-                estado: document.getElementById('obra-estado').value,
-                imagen_url: document.getElementById('obra-img-b64').value,
-                fecha_actualizacion: firebase.firestore.FieldValue.serverTimestamp()
-            };
+            let precioFinal = 'Consultar PVP';
+            if (document.getElementById('precio-manual').checked) {
+                precioFinal = document.getElementById('obra-precio').value.trim();
+                if (!precioFinal) precioFinal = 'Consultar PVP'; // fallback
+            }
+
+            const btnSubmit = document.querySelector('button[onclick="guardarObra()"]');
+            const originalText = btnSubmit.innerText;
+            btnSubmit.innerText = 'Guardando...';
+            btnSubmit.disabled = true;
 
             try {
+                let imgUrl = document.getElementById('obra-img-b64').value;
+
+                // If it's a new base64 image (starts with data:image)
+                if (imgUrl.startsWith('data:image')) {
+                    const res = await fetch(imgUrl);
+                    const blob = await res.blob();
+                    const fileRef = storage.ref().child(`obras/${Date.now()}_${Math.floor(Math.random()*10000)}.jpg`);
+                    await fileRef.put(blob);
+                    imgUrl = await fileRef.getDownloadURL();
+                }
+
+                const payload = {
+                    material: document.getElementById('obra-material').value.trim(),
+                    dimensiones: dimensionesStr,
+                    precio: precioFinal,
+                    descripcion: document.getElementById('obra-descripcion').value.trim(),
+                    estado: document.getElementById('obra-estado').value,
+                    imagen_url: imgUrl,
+                    fecha_actualizacion: firebase.firestore.FieldValue.serverTimestamp()
+                };
+
                 if (!id) {
                     payload.fecha_creacion = firebase.firestore.FieldValue.serverTimestamp();
                     await db.collection('cuadros').add(payload);
@@ -367,6 +433,9 @@
             } catch (error) {
                 console.error("Error al guardar:", error);
                 alert("Hubo un error al guardar la obra.");
+            } finally {
+                btnSubmit.innerText = originalText;
+                btnSubmit.disabled = false;
             }
         }
 
