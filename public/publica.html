@@ -35,6 +35,7 @@
         .nav-btn.active { border-color: #92400e; font-weight: 500; }
     </style>
     <script src="https://aframe.io/releases/1.4.2/aframe.min.js"></script>
+    <script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/4.0.0/model-viewer.min.js"></script>
 </head>
 <body class="min-h-screen flex flex-col justify-between">
 
@@ -305,7 +306,8 @@
                 const tituloWa = ob.material || 'Sin título';
                 const dimsWa = ob.dimensiones || 'Sin medidas';
                 const precioTxtWa = ob.precio === 'Consultar PVP' ? 'Consultar PVP' : (ob.precio ? `${ob.precio} €` : 'Consultar PVP');
-                const mensajeWa = encodeURIComponent(`Hola, estoy interesado en esta obra de Raúl Hernández: ${tituloWa}. Dimensiones: ${dimsWa}. Precio: ${precioTxtWa}. ¿Podría darme más información?`);
+                const urlAppend = ob.imagen_url ? ` \n\n${ob.imagen_url}` : '';
+                const mensajeWa = encodeURIComponent(`Hola, estoy interesado en esta obra de Raúl Hernández: ${tituloWa}. Dimensiones: ${dimsWa}. Precio: ${precioTxtWa}. ¿Podría darme más información?${urlAppend}`);
 
                 container.innerHTML = `
                     <a href="https://wa.me/34692392620?text=${mensajeWa}" target="_blank" rel="external noopener noreferrer" class="w-full flex items-center justify-center bg-amber-900 text-white py-3 md:py-2.5 rounded-lg text-sm font-medium hover:bg-amber-800 transition-colors cursor-pointer relative z-10">
@@ -327,7 +329,7 @@
             }
         }
 
-        function abrirModalRA(imgUrl, dimensionesStr) {
+        async function abrirModalRA(imgUrl, dimensionesStr) {
             if (!isMobile()) {
                 const desktopModal = document.getElementById('modal-ra-desktop');
                 if (desktopModal) {
@@ -367,28 +369,40 @@
             aImg.setAttribute('width', w);
             aImg.setAttribute('height', h);
             aImg.setAttribute('visible', 'false');
-            // Remove static position
-            // aImg.setAttribute('position', '0 1.5 -2'); // 2 meters in front of camera
 
             scene.appendChild(aImg);
 
             modal.classList.remove('hidden');
             modal.classList.add('block');
 
+            // Set up model-viewer for fallback
+            let mv = document.getElementById('mv-fallback');
+            if (!mv) {
+                mv = document.createElement('model-viewer');
+                mv.id = 'mv-fallback';
+                mv.setAttribute('src', 'lienzo.glb');
+                mv.setAttribute('ar', '');
+                mv.setAttribute('ar-modes', 'scene-viewer quick-look');
+                mv.setAttribute('style', 'display: none;');
+                document.body.appendChild(mv);
+            }
+
+            try {
+                // Wait for the model to load before applying texture
+                if (!mv.model) {
+                    await new Promise(resolve => mv.addEventListener('load', resolve, { once: true }));
+                }
+                const texture = await mv.createTexture(imgUrl);
+                const material = mv.model.materials[0];
+                material.pbrMetallicRoughness.baseColorTexture.setTexture(texture);
+            } catch (e) {
+                console.error("Error setting texture on model-viewer:", e);
+            }
+
             function triggerARFallback() {
                 cerrarModalRA();
-                if (/Android/i.test(navigator.userAgent)) {
-                    // We use intent:// scheme to trigger Scene Viewer on Android
-                    const intentUrl = `intent://arvr.google.com/scene-viewer/1.0?file=${encodeURIComponent(imgUrl)}&mode=ar_only#Intent;scheme=https;package=com.google.ar.core;action=android.intent.action.VIEW;S.browser_fallback_url=https://developers.google.com/ar;end;`;
-                    window.open(intentUrl, '_self');
-                } else if (/iPhone|iPad|iPod/i.test(navigator.userAgent)) {
-                    // Fallback for iOS (AR Quick Look)
-                    // Currently passing the image directly to Quick Look (requires a specific link format)
-                    const a = document.createElement('a');
-                    a.href = imgUrl;
-                    a.rel = "ar";
-                    a.appendChild(document.createElement('img'));
-                    a.click();
+                if (/Android|iPhone|iPad|iPod/i.test(navigator.userAgent)) {
+                    mv.activateAR();
                 } else {
                     alert("WebXR AR no está soportado en este dispositivo o navegador.");
                 }
