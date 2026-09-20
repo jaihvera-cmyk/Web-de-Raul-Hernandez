@@ -190,9 +190,6 @@
                         const dims = ob.dimensiones || 'Sin medidas';
                         const precioTxt = ob.precio === 'Consultar PVP' ? 'Consultar PVP' : (ob.precio ? `${ob.precio} €` : 'Consultar PVP');
                         let urlImagenPublica = ob.imagen_url || window.location.href;
-                        if (urlImagenPublica.startsWith('data:image')) {
-                            urlImagenPublica = 'La imagen no tiene URL pública disponible todavía, revise en la web.';
-                        }
                         const mensajeWa = encodeURIComponent(`Hola, estoy interesado en esta obra de Raúl Hernández: ${titulo}. Dimensiones: ${dims}. Precio: ${precioTxt}. ¿Podría darme más información? \n\n${urlImagenPublica}`);
                         // The flex classes ensure it renders properly across devices and is not hidden
                         botonWhatsApp = `
@@ -212,7 +209,7 @@
                     card.className = "bg-white border border-amber-100 rounded-xl overflow-hidden shadow-sm flex flex-col hover:shadow-md transition-shadow";
                     card.innerHTML = `
                         <div class="h-64 bg-amber-50 overflow-hidden flex items-center justify-center relative group">
-                            ${ob.imagen_url ? `<img src="${ob.imagen_url}" alt="${textoAlt}" class="w-full h-full object-contain transition-transform duration-500 group-hover:scale-105">` : `<i class="fas fa-image text-amber-200 text-4xl"></i>`}
+                            ${ob.imagen_url ? `<img src="${ob.imagen_url}" alt="${textoAlt}" loading="lazy" class="w-full h-full object-contain transition-transform duration-500 group-hover:scale-105">` : `<i class="fas fa-image text-amber-200 text-4xl"></i>`}
                         </div>
                         <div class="p-5 flex-grow flex flex-col justify-between">
                             <div>
@@ -309,9 +306,9 @@
     <!-- Modal RA Real -->
     <div id="modal-ra" class="hidden fixed inset-0 z-[100] bg-black">
         <button onclick="cerrarModalRA()" class="absolute top-6 right-6 text-white text-3xl opacity-80 hover:opacity-100 transition z-[110]"><i class="fas fa-times"></i></button>
-        <p class="absolute top-4 left-4 bg-black/50 text-white text-xs px-3 py-1 rounded z-[110]">Para AR en móvil, haz click en el botón "AR" de abajo a la derecha.</p>
+        <p class="absolute top-4 left-4 bg-black/50 text-white text-xs px-3 py-1 rounded z-[110]">Enfoca a la superficie lisa donde deseas ver la obra</p>
 
-        <a-scene embedded xr-mode-ui="enabled: true" id="ar-scene" style="width:100%; height:100%;">
+        <a-scene embedded xr-mode-ui="enabled: true; enterVREnabled: false; enterAREnabled: true" id="ar-scene" style="width:100%; height:100%;">
             <!-- We will inject the a-image dynamically -->
             <a-camera position="0 1.6 0"></a-camera>
             <a-light type="ambient" color="#ffffff"></a-light>
