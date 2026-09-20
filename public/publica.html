@@ -191,19 +191,43 @@
                         const precioTxt = ob.precio === 'Consultar PVP' ? 'Consultar PVP' : (ob.precio ? `${ob.precio} €` : 'Consultar PVP');
 
                         if (!ob.imagen_url || !ob.imagen_url.startsWith('http')) {
-                            // Si la URL es asíncrona y aún no está lista, deshabilitamos el botón para que no lance un texto de error.
+                            const docId = doc.id;
                             botonWhatsApp = `
-                                <button disabled class="mt-4 w-full flex items-center justify-center bg-amber-900/60 text-white py-3 md:py-2.5 rounded-lg text-sm font-medium cursor-not-allowed">
-                                    <i class="fab fa-whatsapp mr-2 text-base md:text-sm md:mr-1"></i> Consultar disponibilidad
-                                </button>
+                                <div id="wa-btn-container-${docId}" class="mt-4 w-full">
+                                    <button class="w-full flex items-center justify-center bg-amber-900/60 text-white py-3 md:py-2.5 rounded-lg text-sm font-medium opacity-50 cursor-not-allowed">
+                                        <i class="fab fa-whatsapp mr-2 text-base md:text-sm md:mr-1"></i> Consultando disponibilidad...
+                                    </button>
+                                </div>
                             `;
+                            // Listen for updates
+                            db.collection('cuadros').doc(docId).onSnapshot(docSnap => {
+                                const data = docSnap.data();
+                                if (data && data.imagen_url && data.imagen_url.startsWith('http')) {
+                                    const container = document.getElementById(`wa-btn-container-${docId}`);
+                                    if (container) {
+                                        const urlImagenPublica = data.imagen_url;
+                                        const tituloWa = data.material || 'Sin título';
+                                        const dimsWa = data.dimensiones || 'Sin medidas';
+                                        const precioTxtWa = data.precio === 'Consultar PVP' ? 'Consultar PVP' : (data.precio ? `${data.precio} €` : 'Consultar PVP');
+                                        const mensajeWa = encodeURIComponent(`Hola, estoy interesado en esta obra de Raúl Hernández: ${tituloWa}. Dimensiones: ${dimsWa}. Precio: ${precioTxtWa}. ¿Podría darme más información? \n\n${urlImagenPublica}`);
+
+                                        container.innerHTML = `
+                                            <a href="https://wa.me/34692392620?text=${mensajeWa}" target="_blank" rel="external noopener noreferrer" class="w-full flex items-center justify-center bg-amber-900 text-white py-3 md:py-2.5 rounded-lg text-sm font-medium hover:bg-amber-800 transition-colors cursor-pointer relative z-10">
+                                                <i class="fab fa-whatsapp mr-2 text-base md:text-sm md:mr-1"></i> Consultar disponibilidad
+                                            </a>
+                                        `;
+                                    }
+                                }
+                            });
                         } else {
                             let urlImagenPublica = ob.imagen_url;
                             const mensajeWa = encodeURIComponent(`Hola, estoy interesado en esta obra de Raúl Hernández: ${titulo}. Dimensiones: ${dims}. Precio: ${precioTxt}. ¿Podría darme más información? \n\n${urlImagenPublica}`);
                             botonWhatsApp = `
-                                <a href="https://wa.me/34692392620?text=${mensajeWa}" target="_blank" class="mt-4 w-full flex items-center justify-center bg-amber-900 text-white py-3 md:py-2.5 rounded-lg text-sm font-medium hover:bg-amber-800 transition-colors">
-                                    <i class="fab fa-whatsapp mr-2 text-base md:text-sm md:mr-1"></i> Consultar disponibilidad
-                                </a>
+                                <div class="mt-4 w-full">
+                                    <a href="https://wa.me/34692392620?text=${mensajeWa}" target="_blank" rel="external noopener noreferrer" class="w-full flex items-center justify-center bg-amber-900 text-white py-3 md:py-2.5 rounded-lg text-sm font-medium hover:bg-amber-800 transition-colors cursor-pointer relative z-10">
+                                        <i class="fab fa-whatsapp mr-2 text-base md:text-sm md:mr-1"></i> Consultar disponibilidad
+                                    </a>
+                                </div>
                             `;
                         }
                     } else if (ob.estado === 'Reservado') {
@@ -310,7 +334,9 @@
             aImg.setAttribute('src', imgUrl);
             aImg.setAttribute('width', w);
             aImg.setAttribute('height', h);
-            aImg.setAttribute('position', '0 1.5 -2'); // 2 meters in front of camera
+            aImg.setAttribute('visible', 'false');
+            // Remove static position
+            // aImg.setAttribute('position', '0 1.5 -2'); // 2 meters in front of camera
 
             scene.appendChild(aImg);
 
@@ -321,7 +347,8 @@
                 if (scene.systems.webxr && scene.systems.webxr.sessionController) {
                      scene.enterAR();
                 } else {
-                     scene.enterVR(); // Will act as enterAR if vr is disabled and AR is enabled
+                    // No fallback to VR
+                    alert("WebXR AR no está soportado en este dispositivo o navegador.");
                 }
             } else {
                 scene.addEventListener('loaded', () => {
@@ -340,6 +367,74 @@
             }
         }
 
+
+        AFRAME.registerComponent('ar-wall-placement', {
+            init: function () {
+                const sceneEl = this.el;
+                this.reticle = document.createElement('a-entity');
+                this.reticle.setAttribute('geometry', 'primitive: ring; radiusInner: 0.04; radiusOuter: 0.06');
+                this.reticle.setAttribute('material', 'color: #ffffff; shader: flat; opacity: 0.8');
+                this.reticle.setAttribute('visible', 'false');
+                sceneEl.appendChild(this.reticle);
+
+                this.xrHitTestSource = null;
+                this.viewerSpace = null;
+                this.refSpace = null;
+
+                sceneEl.renderer.xr.addEventListener('sessionstart', () => {
+                    const session = sceneEl.renderer.xr.getSession();
+                    session.requestReferenceSpace('viewer').then((space) => {
+                        this.viewerSpace = space;
+                        session.requestHitTestSource({ space: this.viewerSpace }).then((source) => {
+                            this.xrHitTestSource = source;
+                        });
+                    });
+                    session.requestReferenceSpace('local-floor').then((space) => {
+                        this.refSpace = space;
+                    });
+
+                    session.addEventListener('select', () => {
+                        if (this.reticle.getAttribute('visible') === 'true' || this.reticle.getAttribute('visible') === true) {
+                            const img = document.getElementById('ar-image-entity');
+                            if (img) {
+                                const pos = this.reticle.object3D.position;
+                                const rot = this.reticle.object3D.rotation;
+                                img.setAttribute('position', `${pos.x} ${pos.y} ${pos.z}`);
+                                img.setAttribute('rotation', `${THREE.MathUtils.radToDeg(rot.x)} ${THREE.MathUtils.radToDeg(rot.y)} ${THREE.MathUtils.radToDeg(rot.z)}`);
+                                img.setAttribute('visible', 'true');
+                            }
+                        }
+                    });
+                });
+            },
+            tick: function () {
+                const sceneEl = this.el;
+                if (!sceneEl.is('ar-mode')) return;
+                const frame = sceneEl.frame;
+                if (!frame || !this.xrHitTestSource || !this.refSpace) return;
+
+                const hitTestResults = frame.getHitTestResults(this.xrHitTestSource);
+                if (hitTestResults.length > 0) {
+                    const pose = hitTestResults[0].getPose(this.refSpace);
+
+                    const normal = new THREE.Vector3(0, 1, 0);
+                    normal.applyQuaternion(pose.transform.orientation);
+
+                    // Check if the surface is vertical (normal.y should be close to 0)
+                    if (Math.abs(normal.y) < 0.2) {
+                        this.reticle.setAttribute('visible', 'true');
+                        this.reticle.object3D.position.copy(pose.transform.position);
+                        this.reticle.object3D.quaternion.copy(pose.transform.orientation);
+                        this.reticle.object3D.rotateX(-Math.PI / 2);
+                    } else {
+                        this.reticle.setAttribute('visible', 'false');
+                    }
+                } else {
+                    this.reticle.setAttribute('visible', 'false');
+                }
+            }
+        });
+
         window.onload = () => {
             cargarGaleria(true);
         };
@@ -350,7 +445,7 @@
         <button onclick="cerrarModalRA()" class="absolute top-6 right-6 text-white text-3xl opacity-80 hover:opacity-100 transition z-[110]"><i class="fas fa-times"></i></button>
         <p class="absolute top-4 left-4 bg-black/50 text-white text-xs px-3 py-1 rounded z-[110]">Enfoca a la superficie lisa donde deseas ver la obra</p>
 
-        <a-scene embedded webxr="optionalFeatures: hit-test; referenceSpaceType: local-floor;" vr-mode-ui="enterVREnabled: false; enterAREnabled: true" id="ar-scene" style="width:100%; height:100%;">
+        <a-scene embedded webxr="optionalFeatures: hit-test; referenceSpaceType: local-floor;" vr-mode-ui="enabled: false" ar-wall-placement id="ar-scene" style="width:100%; height:100%;">
             <!-- We will inject the a-image dynamically -->
             <a-camera position="0 1.6 0"></a-camera>
             <a-light type="ambient" color="#ffffff"></a-light>
