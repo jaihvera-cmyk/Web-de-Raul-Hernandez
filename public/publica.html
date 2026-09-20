@@ -1,460 +1,672 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Raúl Hernández | Pintura de Autor y Arte Abstracto</title>
-    <meta name="description" content="Catálogo oficial de obra pictórica de Raúl Hernández. Pintura abstracta, de autor y piezas únicas expuestas en el corazón de Madrid.">
-    <meta name="keywords" content="pintura de autor, pintura abstracta, arte contemporáneo, antigüedades, Rastro de Madrid, cuadros exclusivos, Raúl Hernández">
-    <meta name="google-site-verification" content="bYtIssCyfnDdpcjWtlAM6_YX-2mxLPdDyN2o8_TRpWI" />
+    <meta
+      name="description"
+      content="Catálogo oficial de obra pictórica de Raúl Hernández. Pintura abstracta, de autor y piezas únicas expuestas en el corazón de Madrid."
+    />
+    <meta
+      name="keywords"
+      content="pintura de autor, pintura abstracta, arte contemporáneo, antigüedades, Rastro de Madrid, cuadros exclusivos, Raúl Hernández"
+    />
+    <meta
+      name="google-site-verification"
+      content="bYtIssCyfnDdpcjWtlAM6_YX-2mxLPdDyN2o8_TRpWI"
+    />
 
     <!-- Google tag (gtag.js) -->
-    <script async src="https://www.googletagmanager.com/gtag/js?id=G-BGHGF63V0R"></script>
+    <script
+      async
+      src="https://www.googletagmanager.com/gtag/js?id=G-BGHGF63V0R"
+    ></script>
     <script>
-        window.dataLayer = window.dataLayer || [];
-        function gtag(){dataLayer.push(arguments);}
-        gtag("js", new Date());
+      window.dataLayer = window.dataLayer || [];
+      function gtag() {
+        dataLayer.push(arguments);
+      }
+      gtag("js", new Date());
 
-        gtag("config", "G-BGHGF63V0R");
+      gtag("config", "G-BGHGF63V0R");
     </script>
 
     <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600&family=Inter:wght@300;400;500&display=swap"
+      rel="stylesheet"
+    />
 
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
 
     <style>
-        body { font-family: 'Inter', sans-serif; background-color: #fcf9f5; color: #2c2c2c; }
-        h1, h2, h3 { font-family: 'Playfair Display', serif; }
-        .firma-header { mix-blend-mode: multiply; max-height: 40px; }
-        .tab-content { display: none; }
-        .tab-content.active { display: block; }
-        .nav-btn { color: #92400e; padding-bottom: 4px; border-bottom: 2px solid transparent; transition: all 0.2s; }
-        .nav-btn.active { border-color: #92400e; font-weight: 500; }
+      body {
+        font-family: "Inter", sans-serif;
+        background-color: #fcf9f5;
+        color: #2c2c2c;
+      }
+      h1,
+      h2,
+      h3 {
+        font-family: "Playfair Display", serif;
+      }
+      .firma-header {
+        mix-blend-mode: multiply;
+        max-height: 40px;
+      }
+      .tab-content {
+        display: none;
+      }
+      .tab-content.active {
+        display: block;
+      }
+      .nav-btn {
+        color: #92400e;
+        padding-bottom: 4px;
+        border-bottom: 2px solid transparent;
+        transition: all 0.2s;
+      }
+      .nav-btn.active {
+        border-color: #92400e;
+        font-weight: 500;
+      }
     </style>
     <script src="https://aframe.io/releases/1.4.2/aframe.min.js"></script>
-    <script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/4.0.0/model-viewer.min.js"></script>
-</head>
-<body class="min-h-screen flex flex-col justify-between">
-
-    <header class="w-full border-b border-amber-100 bg-white/80 backdrop-blur-md sticky top-0 z-50 shadow-sm">
-        <div class="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
-            <div class="flex flex-col justify-center">
-                <img src="firma_transparente.png" alt="Raúl Hernández" class="firma-header mb-1">
-                <p class="text-[10px] text-amber-700 tracking-[0.2em] uppercase font-medium">Pintura de Autor</p>
-            </div>
-            <div class="flex items-center space-x-6">
-                <a href="https://instagram.com/raulhernandezme" target="_blank" rel="noopener noreferrer" class="text-amber-800 hover:text-amber-600 transition-colors flex items-center gap-2 bg-amber-50 px-3 py-1.5 rounded-full border border-amber-200 text-sm font-medium">
-                    <i class="fab fa-instagram text-lg"></i>
-                    <span class="hidden sm:inline">@raulhernandezme</span>
-                </a>
-            </div>
+    <script
+      type="module"
+      src="https://ajax.googleapis.com/ajax/libs/model-viewer/4.0.0/model-viewer.min.js"
+    ></script>
+  </head>
+  <body class="min-h-screen flex flex-col justify-between">
+    <header
+      class="w-full border-b border-amber-100 bg-white/80 backdrop-blur-md sticky top-0 z-50 shadow-sm"
+    >
+      <div
+        class="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between"
+      >
+        <div class="flex flex-col justify-center">
+          <img
+            src="firma_transparente.png"
+            alt="Raúl Hernández"
+            class="firma-header mb-1"
+          />
+          <p
+            class="text-[10px] text-amber-700 tracking-[0.2em] uppercase font-medium"
+          >
+            Pintura de Autor
+          </p>
         </div>
+        <div class="flex items-center space-x-6">
+          <a
+            href="https://instagram.com/raulhernandezme"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="text-amber-800 hover:text-amber-600 transition-colors flex items-center gap-2 bg-amber-50 px-3 py-1.5 rounded-full border border-amber-200 text-sm font-medium"
+          >
+            <i class="fab fa-instagram text-lg"></i>
+            <span class="hidden sm:inline">@raulhernandezme</span>
+          </a>
+        </div>
+      </div>
 
-        <nav class="max-w-7xl mx-auto px-6 flex justify-center gap-8 pt-3 pb-0 text-sm">
-            <button class="nav-btn active" onclick="cambiarSeccion('mi_obra', this)">Mi Obra</button>
-            <button class="nav-btn" onclick="cambiarSeccion('a_la_venta', this)">A la Venta</button>
-            <button class="nav-btn" onclick="cambiarSeccion('quien_soy', this)">Quién Soy</button>
-        </nav>
+      <nav
+        class="max-w-7xl mx-auto px-6 flex justify-center gap-8 pt-3 pb-0 text-sm"
+      >
+        <button
+          class="nav-btn active"
+          onclick="cambiarSeccion('mi_obra', this)"
+        >
+          Mi Obra
+        </button>
+        <button class="nav-btn" onclick="cambiarSeccion('a_la_venta', this)">
+          A la Venta
+        </button>
+        <button class="nav-btn" onclick="cambiarSeccion('quien_soy', this)">
+          Quién Soy
+        </button>
+      </nav>
     </header>
 
     <main class="max-w-7xl mx-auto px-6 py-12 flex-grow w-full">
-        <div id="seccion-galeria" class="tab-content active">
-            <div id="galeria-grid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8">
-                <div class="col-span-full text-center py-10 text-amber-800/60"><i class="fas fa-spinner fa-spin mr-2"></i> Cargando catálogo...</div>
-            </div>
-            <div id="contenedor-cargar-mas" class="w-full text-center mt-12 hidden">
-                <button onclick="cargarGaleria(false)" class="text-sm border border-amber-200 bg-white text-amber-800 px-6 py-2 rounded-full shadow-sm hover:bg-amber-50 transition-colors">Cargar más obras</button>
-            </div>
+      <div id="seccion-galeria" class="tab-content active">
+        <div
+          id="galeria-grid"
+          class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8"
+        >
+          <div class="col-span-full text-center py-10 text-amber-800/60">
+            <i class="fas fa-spinner fa-spin mr-2"></i> Cargando catálogo...
+          </div>
         </div>
+        <div id="contenedor-cargar-mas" class="w-full text-center mt-12 hidden">
+          <button
+            onclick="cargarGaleria(false)"
+            class="text-sm border border-amber-200 bg-white text-amber-800 px-6 py-2 rounded-full shadow-sm hover:bg-amber-50 transition-colors"
+          >
+            Cargar más obras
+          </button>
+        </div>
+      </div>
 
-        <div id="seccion-quien-soy" class="tab-content">
-            <div class="max-w-2xl mx-auto bg-white p-8 md:p-12 border border-amber-100 rounded-xl shadow-sm">
-                <h2 class="text-3xl text-amber-950 mb-6 text-center">Sobre el Artista</h2>
-                <div id="bio-texto-publico" class="text-gray-700 leading-relaxed whitespace-pre-line text-sm md:text-base">
-                    Cargando biografía...
-                </div>
-            </div>
+      <div id="seccion-quien-soy" class="tab-content">
+        <div
+          class="max-w-2xl mx-auto bg-white p-8 md:p-12 border border-amber-100 rounded-xl shadow-sm"
+        >
+          <h2 class="text-3xl text-amber-950 mb-6 text-center">
+            Sobre el Artista
+          </h2>
+          <div
+            id="bio-texto-publico"
+            class="text-gray-700 leading-relaxed whitespace-pre-line text-sm md:text-base"
+          >
+            Cargando biografía...
+          </div>
         </div>
+      </div>
     </main>
 
-    <footer class="border-t border-amber-100 bg-amber-900 text-amber-50 py-10 mt-10">
-        <div class="max-w-7xl mx-auto px-6 flex flex-col md:flex-row justify-between items-center text-center md:text-left gap-6">
-            <div>
-                <p class="text-sm font-medium tracking-wide">Raúl Hernández — Estudio</p>
-                <p class="text-xs text-amber-200/80 mt-1">Nuevas Galerías del Rastro · Ribera de Curtidores, 12, Madrid</p>
-            </div>
-            <div class="text-xs text-amber-300/60 flex flex-col items-center md:items-end gap-2">
-                <a href="https://instagram.com/raulhernandezme" target="_blank" class="hover:text-white transition-colors"><i class="fab fa-instagram text-lg"></i></a>
-                &copy; 2026 Raúl Hernández. Todos los derechos reservados.
-            </div>
+    <footer
+      class="border-t border-amber-100 bg-amber-900 text-amber-50 py-10 mt-10"
+    >
+      <div
+        class="max-w-7xl mx-auto px-6 flex flex-col md:flex-row justify-between items-center text-center md:text-left gap-6"
+      >
+        <div>
+          <p class="text-sm font-medium tracking-wide">
+            Raúl Hernández — Estudio
+          </p>
+          <p class="text-xs text-amber-200/80 mt-1">
+            Nuevas Galerías del Rastro · Ribera de Curtidores, 12, Madrid
+          </p>
         </div>
+        <div
+          class="text-xs text-amber-300/60 flex flex-col items-center md:items-end gap-2"
+        >
+          <a
+            href="https://instagram.com/raulhernandezme"
+            target="_blank"
+            class="hover:text-white transition-colors"
+            ><i class="fab fa-instagram text-lg"></i
+          ></a>
+          &copy; 2026 Raúl Hernández. Todos los derechos reservados.
+        </div>
+      </div>
     </footer>
 
     <script>
-        const firebaseConfig = {
-            apiKey: "AIzaSyC1ckj1bXOryXqZ1nAK0xO3FdG08k7cBqc",
-            authDomain: "obra-de-raul-hernandez.firebaseapp.com",
-            projectId: "obra-de-raul-hernandez",
-            storageBucket: "obra-de-raul-hernandez.firebasestorage.app"
-        };
-        firebase.initializeApp(firebaseConfig);
-        const db = firebase.firestore();
+      const firebaseConfig = {
+        apiKey: "AIzaSyC1ckj1bXOryXqZ1nAK0xO3FdG08k7cBqc",
+        authDomain: "obra-de-raul-hernandez.firebaseapp.com",
+        projectId: "obra-de-raul-hernandez",
+        storageBucket: "obra-de-raul-hernandez.firebasestorage.app",
+      };
+      firebase.initializeApp(firebaseConfig);
+      const db = firebase.firestore();
 
-        let modoActual = 'mi_obra';
-        let ultimoDocumento = null;
+      let modoActual = "mi_obra";
+      let ultimoDocumento = null;
 
-        function cambiarSeccion(seccion, boton) {
-            document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
-            boton.classList.add('active');
+      function cambiarSeccion(seccion, boton) {
+        document
+          .querySelectorAll(".nav-btn")
+          .forEach((b) => b.classList.remove("active"));
+        boton.classList.add("active");
 
-            if (seccion === 'quien_soy') {
-                document.getElementById('seccion-galeria').classList.remove('active');
-                document.getElementById('seccion-quien-soy').classList.add('active');
-                cargarBio();
+        if (seccion === "quien_soy") {
+          document.getElementById("seccion-galeria").classList.remove("active");
+          document.getElementById("seccion-quien-soy").classList.add("active");
+          cargarBio();
+        } else {
+          document
+            .getElementById("seccion-quien-soy")
+            .classList.remove("active");
+          document.getElementById("seccion-galeria").classList.add("active");
+          modoActual = seccion;
+          cargarGaleria(true);
+        }
+      }
+
+      function cargarBio() {
+        db.collection("configuracion")
+          .doc("general")
+          .get()
+          .then((doc) => {
+            const caja = document.getElementById("bio-texto-publico");
+            if (doc.exists && doc.data().biografia) {
+              caja.innerText = doc.data().biografia;
             } else {
-                document.getElementById('seccion-quien-soy').classList.remove('active');
-                document.getElementById('seccion-galeria').classList.add('active');
-                modoActual = seccion;
-                cargarGaleria(true);
+              caja.innerHTML =
+                '<p class="text-center italic text-gray-400">Biografía en preparación.</p>';
             }
+          });
+      }
+
+      function cargarGaleria(esNuevaCarga = true) {
+        const grid = document.getElementById("galeria-grid");
+        const btnCargarMas = document.getElementById("contenedor-cargar-mas");
+
+        if (esNuevaCarga) {
+          grid.innerHTML =
+            '<div class="col-span-full text-center py-10 text-amber-800/60"><i class="fas fa-spinner fa-spin mr-2"></i> Cargando obras...</div>';
+          ultimoDocumento = null;
+          if (btnCargarMas) btnCargarMas.classList.add("hidden");
         }
 
-        function cargarBio() {
-            db.collection('configuracion').doc('general').get().then(doc => {
-                const caja = document.getElementById('bio-texto-publico');
-                if (doc.exists && doc.data().biografia) {
-                    caja.innerText = doc.data().biografia;
-                } else {
-                    caja.innerHTML = '<p class="text-center italic text-gray-400">Biografía en preparación.</p>';
-                }
-            });
-        }
+        let query = db.collection("cuadros");
 
-        function cargarGaleria(esNuevaCarga = true) {
-            const grid = document.getElementById('galeria-grid');
-            const btnCargarMas = document.getElementById('contenedor-cargar-mas');
+        // To support case-insensitive "includes" logic, we must fetch everything
+        // and filter client-side since Firestore does not support this natively.
+        // For a gallery, this is usually acceptable.
+        // We remove the limit() and startAfter() since client-side filtering breaks standard pagination.
+        // We'll simulate pagination client-side.
 
-            if (esNuevaCarga) {
-                grid.innerHTML = '<div class="col-span-full text-center py-10 text-amber-800/60"><i class="fas fa-spinner fa-spin mr-2"></i> Cargando obras...</div>';
-                ultimoDocumento = null;
-                if(btnCargarMas) btnCargarMas.classList.add('hidden');
-            }
+        const renderDocs = () => {
+          const pageSize = 12;
+          const docsToShow = window.allDocsFiltered.slice(
+            window.currentDisplayCount,
+            window.currentDisplayCount + pageSize,
+          );
 
-            let query = db.collection('cuadros');
+          if (window.allDocsFiltered.length === 0 && esNuevaCarga) {
+            grid.innerHTML =
+              '<div class="col-span-full text-center py-10 text-gray-500">No hay obras disponibles en esta sección actualmente.</div>';
+            return;
+          }
 
-            // To support case-insensitive "includes" logic, we must fetch everything
-            // and filter client-side since Firestore does not support this natively.
-            // For a gallery, this is usually acceptable.
-            // We remove the limit() and startAfter() since client-side filtering breaks standard pagination.
-            // We'll simulate pagination client-side.
+          window.currentDisplayCount += docsToShow.length;
 
-            const renderDocs = () => {
-                const pageSize = 12;
-                const docsToShow = window.allDocsFiltered.slice(window.currentDisplayCount, window.currentDisplayCount + pageSize);
+          if (
+            window.currentDisplayCount < window.allDocsFiltered.length &&
+            btnCargarMas
+          ) {
+            btnCargarMas.classList.remove("hidden");
+          } else if (btnCargarMas) {
+            btnCargarMas.classList.add("hidden");
+          }
 
-                if (window.allDocsFiltered.length === 0 && esNuevaCarga) {
-                    grid.innerHTML = '<div class="col-span-full text-center py-10 text-gray-500">No hay obras disponibles en esta sección actualmente.</div>';
-                    return;
-                }
+          docsToShow.forEach((doc) => {
+            const ob = doc.data();
 
-                window.currentDisplayCount += docsToShow.length;
+            const textoAlt = `Cuadro de Raúl Hernández - ${ob.material || "Técnica mixta"} - ${ob.dimensiones || "Sin medidas"}`;
+            const descripcionHtml = ob.descripcion
+              ? `<p class="text-sm text-amber-900/80 mt-2 mb-2 italic line-clamp-2" style="display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;">"${ob.descripcion}"</p>`
+              : "";
 
-                if (window.currentDisplayCount < window.allDocsFiltered.length && btnCargarMas) {
-                    btnCargarMas.classList.remove('hidden');
-                } else if (btnCargarMas) {
-                    btnCargarMas.classList.add('hidden');
-                }
+            let bloquePrecio = "";
+            let botonWhatsApp = "";
 
-                docsToShow.forEach(doc => {
-                    const ob = doc.data();
+            const estadoObra = (ob.estado || "").toLowerCase();
+            const estaEnVenta =
+              estadoObra.includes("venta") || estadoObra.includes("disponible");
 
-                    const textoAlt = `Cuadro de Raúl Hernández - ${ob.material || 'Técnica mixta'} - ${ob.dimensiones || 'Sin medidas'}`;
-                    const descripcionHtml = ob.descripcion ? `<p class="text-sm text-amber-900/80 mt-2 mb-2 italic line-clamp-2" style="display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;">"${ob.descripcion}"</p>` : '';
+            let imageUrl = ob.imagen_url || null;
 
-                    let bloquePrecio = '';
-                    let botonWhatsApp = '';
+            if (estaEnVenta) {
+              if (modoActual === "a_la_venta") {
+                bloquePrecio =
+                  ob.precio === "Consultar PVP"
+                    ? `<span class="text-sm text-amber-800">Consultar PVP</span>`
+                    : ob.precio
+                      ? `<span class="text-lg font-bold text-amber-900">${ob.precio} €</span>`
+                      : `<span class="text-sm text-amber-800">Consultar PVP</span>`;
+              } else {
+                bloquePrecio = ""; // Hidden in 'Mi Obra'
+              }
 
-                    const estadoObra = (ob.estado || '').toLowerCase();
-                    const estaEnVenta = estadoObra.includes('venta') || estadoObra.includes('disponible');
+              const titulo = ob.material || "Sin título";
+              const dims = ob.dimensiones || "Sin medidas";
+              const precioTxt =
+                ob.precio === "Consultar PVP"
+                  ? "Consultar PVP"
+                  : ob.precio
+                    ? `${ob.precio} €`
+                    : "Consultar PVP";
 
-                    let imageUrl = ob.imagen_url || null;
-
-                    if (estaEnVenta) {
-                        if (modoActual === 'a_la_venta') {
-                            bloquePrecio = ob.precio === 'Consultar PVP' ? `<span class="text-sm text-amber-800">Consultar PVP</span>` : (ob.precio ? `<span class="text-lg font-bold text-amber-900">${ob.precio} €</span>` : `<span class="text-sm text-amber-800">Consultar PVP</span>`);
-                        } else {
-                            bloquePrecio = ''; // Hidden in 'Mi Obra'
-                        }
-
-                        const titulo = ob.material || 'Sin título';
-                        const dims = ob.dimensiones || 'Sin medidas';
-                        const precioTxt = ob.precio === 'Consultar PVP' ? 'Consultar PVP' : (ob.precio ? `${ob.precio} €` : 'Consultar PVP');
-
-                        if (!imageUrl || imageUrl.startsWith('data:') || imageUrl.startsWith('blob:')) {
-                            // Visually disabled div for WhatsApp button
-                            botonWhatsApp = `
+              if (!imageUrl) {
+                // Visually disabled div for WhatsApp button
+                botonWhatsApp = `
                                 <div class="mt-4 w-full">
                                     <div class="w-full flex items-center justify-center bg-gray-300 text-gray-500 py-3 md:py-2.5 rounded-lg text-sm font-medium cursor-not-allowed">
                                         <i class="fab fa-whatsapp mr-2 text-base md:text-sm md:mr-1"></i> Consultar disponibilidad
                                     </div>
                                 </div>
                             `;
-                        } else {
-                            let urlImagenPublica = "";
-                            if (imageUrl.startsWith('https://firebasestorage')) {
-                                urlImagenPublica = ` \n\n${imageUrl}`;
-                            } else if (imageUrl.startsWith('http')) {
-                                urlImagenPublica = ` \n\n${imageUrl}`;
-                            }
-                            const mensajeWa = encodeURIComponent(`Hola, estoy interesado en esta obra de Raúl Hernández: ${titulo}. Dimensiones: ${dims}. Precio: ${precioTxt}. ¿Podría darme más información?${urlImagenPublica}`);
-                            botonWhatsApp = `
+              } else {
+                let urlImagenPublica = "";
+                if (imageUrl.startsWith("http")) {
+                  urlImagenPublica = ` \n\n${imageUrl}`;
+                }
+                const mensajeWa = encodeURIComponent(
+                  `Hola, estoy interesado en esta obra de Raúl Hernández: ${titulo}. Dimensiones: ${dims}. Precio: ${precioTxt}. ¿Podría darme más información?${urlImagenPublica}`,
+                );
+                botonWhatsApp = `
                                 <div class="mt-4 w-full">
                                     <a href="https://wa.me/34692392620?text=${mensajeWa}" target="_blank" rel="external noopener noreferrer" class="w-full flex items-center justify-center bg-amber-900 text-white py-3 md:py-2.5 rounded-lg text-sm font-medium hover:bg-amber-800 transition-colors cursor-pointer relative z-10">
                                         <i class="fab fa-whatsapp mr-2 text-base md:text-sm md:mr-1"></i> Consultar disponibilidad
                                     </a>
                                 </div>
                             `;
-                        }
-                    } else if (ob.estado === 'Reservado') {
-                        if (modoActual === 'a_la_venta') {
-                            bloquePrecio = ob.precio === 'Consultar PVP' ? `<span class="text-sm text-amber-800">Consultar PVP</span>` : (ob.precio ? `<span class="text-lg font-bold text-amber-900">${ob.precio} €</span>` : '');
-                        } else {
-                            bloquePrecio = '';
-                        }
+              }
+            } else if (ob.estado === "Reservado") {
+              if (modoActual === "a_la_venta") {
+                bloquePrecio =
+                  ob.precio === "Consultar PVP"
+                    ? `<span class="text-sm text-amber-800">Consultar PVP</span>`
+                    : ob.precio
+                      ? `<span class="text-lg font-bold text-amber-900">${ob.precio} €</span>`
+                      : "";
+              } else {
+                bloquePrecio = "";
+              }
+            }
+
+            const card = document.createElement("div");
+            if (isMobile() && imageUrl) {
+              let mv = document.getElementById("mv-" + doc.id);
+              if (!mv) {
+                mv = document.createElement("model-viewer");
+                mv.id = "mv-" + doc.id;
+                mv.setAttribute("src", "lienzo.glb");
+                mv.setAttribute("ar", "");
+                mv.setAttribute("ar-modes", "webxr scene-viewer quick-look");
+                mv.setAttribute("ar-placement", "wall");
+                mv.setAttribute("camera-controls", "");
+                mv.setAttribute("ar-scale", "auto");
+                mv.setAttribute(
+                  "style",
+                  "position: absolute; left: -9999px; top: -9999px; width: 1px; height: 1px;",
+                );
+                document.body.appendChild(mv);
+
+                mv.addEventListener(
+                  "load",
+                  async () => {
+                    try {
+                      const texture = await mv.createTexture(imageUrl);
+                      if (
+                        mv.model &&
+                        mv.model.materials &&
+                        mv.model.materials[0]
+                      ) {
+                        mv.model.materials[0].pbrMetallicRoughness.baseColorTexture.setTexture(
+                          texture,
+                        );
+                      }
+                    } catch (e) {
+                      console.error(
+                        "Error setting texture on background model-viewer:",
+                        e,
+                      );
                     }
+                  },
+                  { once: true },
+                );
+              }
+            }
 
-                    const card = document.createElement('div');
-                    if (isMobile() && imageUrl) {
-                        let mv = document.getElementById('mv-' + doc.id);
-                        if (!mv) {
-                            mv = document.createElement('model-viewer');
-                            mv.id = 'mv-' + doc.id;
-                            mv.setAttribute('src', 'lienzo.glb');
-                            mv.setAttribute('ar', '');
-                            mv.setAttribute('ar-modes', 'webxr scene-viewer quick-look');
-                            mv.setAttribute('ar-placement', 'wall');
-                            mv.setAttribute('camera-controls', '');
-                            mv.setAttribute('ar-scale', 'auto');
-                            mv.setAttribute('style', 'position: absolute; left: -9999px; top: -9999px; width: 1px; height: 1px;');
-                            document.body.appendChild(mv);
-
-                            mv.addEventListener('load', async () => {
-                                try {
-                                    const texture = await mv.createTexture(imageUrl);
-                                    if (mv.model && mv.model.materials && mv.model.materials[0]) {
-                                        mv.model.materials[0].pbrMetallicRoughness.baseColorTexture.setTexture(texture);
-                                    }
-                                } catch (e) {
-                                    console.error("Error setting texture on background model-viewer:", e);
-                                }
-                            }, { once: true });
-                        }
-                    }
-
-                    card.className = "bg-white border border-amber-100 rounded-xl overflow-hidden shadow-sm flex flex-col hover:shadow-md transition-shadow";
-                    card.innerHTML = `
+            card.className =
+              "bg-white border border-amber-100 rounded-xl overflow-hidden shadow-sm flex flex-col hover:shadow-md transition-shadow";
+            card.innerHTML = `
                         <div class="h-64 bg-amber-50 overflow-hidden flex items-center justify-center relative group">
                             ${imageUrl ? `<img src="${imageUrl}" alt="${textoAlt}" loading="lazy" class="w-full h-full object-contain transition-transform duration-500 group-hover:scale-105">` : `<i class="fas fa-image text-amber-200 text-4xl"></i>`}
                         </div>
                         <div class="p-5 flex-grow flex flex-col justify-between">
                             <div>
-                                <p class="text-xs text-amber-700 font-medium uppercase tracking-wider mb-1">${ob.material || 'Técnica mixta'}</p>
-                                <h3 class="text-base font-semibold text-amber-950 mb-1">${ob.dimensiones || 'Dimensiones no esp.'}</h3>
+                                <p class="text-xs text-amber-700 font-medium uppercase tracking-wider mb-1">${ob.material || "Técnica mixta"}</p>
+                                <h3 class="text-base font-semibold text-amber-950 mb-1">${ob.dimensiones || "Dimensiones no esp."}</h3>
                                 ${descripcionHtml}
                             </div>
                             <div class="mt-4 pt-3 border-t border-gray-100 w-full">
                                 <div class="flex justify-between items-center">
                                     ${bloquePrecio}
-                                    <span class="text-[10px] px-2 py-1 bg-amber-50 text-amber-800 rounded font-medium ml-auto uppercase tracking-wider">${ob.estado || 'En colección privada'}</span>
+                                    <span class="text-[10px] px-2 py-1 bg-amber-50 text-amber-800 rounded font-medium ml-auto uppercase tracking-wider">${ob.estado || "En colección privada"}</span>
                                 </div>
                                 ${botonWhatsApp}
-                                <a href="javascript:void(0)" onclick="abrirModalRA('${doc.id}', '${imageUrl || ''}', '${ob.dimensiones || ''}')" class="mt-2 text-center text-xs text-amber-700/80 hover:text-amber-900 flex justify-center items-center py-2 transition-colors"><i class="fas fa-cube mr-2"></i>Ver en tu pared</a>
+                                <a href="javascript:void(0)" onclick="abrirModalRA('${doc.id}', '${imageUrl || ""}', '${ob.dimensiones || ""}')" class="mt-2 text-center text-xs text-amber-700/80 hover:text-amber-900 flex justify-center items-center py-2 transition-colors"><i class="fas fa-cube mr-2"></i>Ver en tu pared</a>
                             </div>
                         </div>
                     `;
-                    grid.appendChild(card);
-                });
-            };
-
-            if (esNuevaCarga) {
-                query.get().then(snap => {
-                    grid.innerHTML = '';
-                    let allDocs = snap.docs;
-                    if (modoActual === 'a_la_venta') {
-                        allDocs = allDocs.filter(d => {
-                            const estado = (d.data().estado || '').toLowerCase();
-                            return estado.includes('disponible');
-                        });
-                    }
-                    window.allDocsFiltered = allDocs;
-                    window.currentDisplayCount = 0;
-                    renderDocs();
-                });
-            } else {
-                renderDocs();
-            }
-        }
-
-        // Function removed as fallback is no longer used since we don't query Firestore dynamically
-
-        function isMobile() {
-            return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-        }
-
-        function cerrarModalRADesktop() {
-            const m = document.getElementById('modal-ra-desktop');
-            if(m) {
-                m.classList.add('hidden');
-                m.classList.remove('flex');
-            }
-        }
-
-        async function abrirModalRA(docId, imgUrl, dimensionesStr) {
-            if (!isMobile()) {
-                const desktopModal = document.getElementById('modal-ra-desktop');
-                if (desktopModal) {
-                    desktopModal.classList.remove('hidden');
-                    desktopModal.classList.add('flex');
-                }
-                return;
-            }
-
-            if (!imgUrl) {
-                alert("Esta obra no tiene imagen disponible para previsualizar.");
-                return;
-            }
-
-            let mv = document.getElementById('mv-' + docId);
-            if (!mv) {
-                // Si por alguna razon no se creo en renderDocs, hacemos fallback sincrono aunque puede fallar
-                mv = document.createElement('model-viewer');
-                mv.id = 'mv-' + docId;
-                mv.setAttribute('src', 'lienzo.glb');
-                mv.setAttribute('ar', '');
-                mv.setAttribute('ar-modes', 'webxr scene-viewer quick-look');
-                mv.setAttribute('ar-placement', 'wall');
-                mv.setAttribute('camera-controls', '');
-                mv.setAttribute('ar-scale', 'auto');
-                mv.setAttribute('style', 'position: absolute; left: -9999px; top: -9999px; width: 1px; height: 1px;');
-                document.body.appendChild(mv);
-            }
-
-            if (/Android|iPhone|iPad|iPod/i.test(navigator.userAgent)) {
-                mv.activateAR();
-            } else {
-                alert("WebXR AR no está soportado en este dispositivo o navegador.");
-            }
-        }
-
-        function cerrarModalRA() {
-            const modal = document.getElementById('modal-ra');
-            modal.classList.add('hidden');
-            modal.classList.remove('block');
-            const scene = document.querySelector('a-scene');
-            if (scene && scene.xrSession) {
-                scene.xrSession.end();
-            }
-        }
-
-
-        AFRAME.registerComponent('ar-wall-placement', {
-            init: function () {
-                const sceneEl = this.el;
-                this.reticle = document.createElement('a-entity');
-                this.reticle.setAttribute('geometry', 'primitive: ring; radiusInner: 0.04; radiusOuter: 0.06');
-                this.reticle.setAttribute('material', 'color: #ffffff; shader: flat; opacity: 0.8');
-                this.reticle.setAttribute('visible', 'false');
-                sceneEl.appendChild(this.reticle);
-
-                this.xrHitTestSource = null;
-                this.viewerSpace = null;
-                this.refSpace = null;
-
-                sceneEl.renderer.xr.addEventListener('sessionstart', () => {
-                    const session = sceneEl.renderer.xr.getSession();
-                    session.requestReferenceSpace('viewer').then((space) => {
-                        this.viewerSpace = space;
-                        session.requestHitTestSource({ space: this.viewerSpace }).then((source) => {
-                            this.xrHitTestSource = source;
-                        });
-                    });
-                    session.requestReferenceSpace('local-floor').then((space) => {
-                        this.refSpace = space;
-                    });
-
-                    session.addEventListener('select', () => {
-                        if (this.reticle.getAttribute('visible') === 'true' || this.reticle.getAttribute('visible') === true) {
-                            const img = document.getElementById('ar-image-entity');
-                            if (img) {
-                                const pos = this.reticle.object3D.position;
-                                const rot = this.reticle.object3D.rotation;
-                                img.setAttribute('position', `${pos.x} ${pos.y} ${pos.z}`);
-                                img.setAttribute('rotation', `${THREE.MathUtils.radToDeg(rot.x)} ${THREE.MathUtils.radToDeg(rot.y)} ${THREE.MathUtils.radToDeg(rot.z)}`);
-                                img.setAttribute('visible', 'true');
-                            }
-                        }
-                    });
-                });
-            },
-            tick: function () {
-                const sceneEl = this.el;
-                if (!sceneEl.is('ar-mode')) return;
-                const frame = sceneEl.frame;
-                if (!frame || !this.xrHitTestSource || !this.refSpace) return;
-
-                const hitTestResults = frame.getHitTestResults(this.xrHitTestSource);
-                if (hitTestResults.length > 0) {
-                    const pose = hitTestResults[0].getPose(this.refSpace);
-
-                    const normal = new THREE.Vector3(0, 1, 0);
-                    normal.applyQuaternion(pose.transform.orientation);
-
-                    // Check if the surface is vertical (normal.y should be close to 0)
-                    if (Math.abs(normal.y) < 0.2) {
-                        this.reticle.setAttribute('visible', 'true');
-                        this.reticle.object3D.position.copy(pose.transform.position);
-                        this.reticle.object3D.quaternion.copy(pose.transform.orientation);
-                        this.reticle.object3D.rotateX(-Math.PI / 2);
-                    } else {
-                        this.reticle.setAttribute('visible', 'false');
-                    }
-                } else {
-                    this.reticle.setAttribute('visible', 'false');
-                }
-            }
-        });
-
-        window.onload = () => {
-            cargarGaleria(true);
+            grid.appendChild(card);
+          });
         };
+
+        if (esNuevaCarga) {
+          query.get().then((snap) => {
+            grid.innerHTML = "";
+            let allDocs = snap.docs;
+            if (modoActual === "a_la_venta") {
+              allDocs = allDocs.filter((d) => {
+                const estado = (d.data().estado || "").toLowerCase();
+                return estado.includes("disponible");
+              });
+            }
+            window.allDocsFiltered = allDocs;
+            window.currentDisplayCount = 0;
+            renderDocs();
+          });
+        } else {
+          renderDocs();
+        }
+      }
+
+      function isMobile() {
+        return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
+          navigator.userAgent,
+        );
+      }
+
+      function cerrarModalRADesktop() {
+        const m = document.getElementById("modal-ra-desktop");
+        if (m) {
+          m.classList.add("hidden");
+          m.classList.remove("flex");
+        }
+      }
+
+      async function abrirModalRA(docId, imgUrl, dimensionesStr) {
+        if (!isMobile()) {
+          const desktopModal = document.getElementById("modal-ra-desktop");
+          if (desktopModal) {
+            desktopModal.classList.remove("hidden");
+            desktopModal.classList.add("flex");
+          }
+          return;
+        }
+
+        if (!imgUrl) {
+          alert("Esta obra no tiene imagen disponible para previsualizar.");
+          return;
+        }
+
+        let mv = document.getElementById("mv-" + docId);
+        if (!mv) {
+          // Si por alguna razon no se creo en renderDocs, hacemos fallback sincrono aunque puede fallar
+          mv = document.createElement("model-viewer");
+          mv.id = "mv-" + docId;
+          mv.setAttribute("src", "lienzo.glb");
+          mv.setAttribute("ar", "");
+          mv.setAttribute("ar-modes", "webxr scene-viewer quick-look");
+          mv.setAttribute("ar-placement", "wall");
+          mv.setAttribute("camera-controls", "");
+          mv.setAttribute("ar-scale", "auto");
+          mv.setAttribute(
+            "style",
+            "position: absolute; left: -9999px; top: -9999px; width: 1px; height: 1px;",
+          );
+          document.body.appendChild(mv);
+        }
+
+        if (/Android|iPhone|iPad|iPod/i.test(navigator.userAgent)) {
+          mv.activateAR();
+        } else {
+          alert("WebXR AR no está soportado en este dispositivo o navegador.");
+        }
+      }
+
+      function cerrarModalRA() {
+        const modal = document.getElementById("modal-ra");
+        modal.classList.add("hidden");
+        modal.classList.remove("block");
+        const scene = document.querySelector("a-scene");
+        if (scene && scene.xrSession) {
+          scene.xrSession.end();
+        }
+      }
+
+      AFRAME.registerComponent("ar-wall-placement", {
+        init: function () {
+          const sceneEl = this.el;
+          this.reticle = document.createElement("a-entity");
+          this.reticle.setAttribute(
+            "geometry",
+            "primitive: ring; radiusInner: 0.04; radiusOuter: 0.06",
+          );
+          this.reticle.setAttribute(
+            "material",
+            "color: #ffffff; shader: flat; opacity: 0.8",
+          );
+          this.reticle.setAttribute("visible", "false");
+          sceneEl.appendChild(this.reticle);
+
+          this.xrHitTestSource = null;
+          this.viewerSpace = null;
+          this.refSpace = null;
+
+          sceneEl.renderer.xr.addEventListener("sessionstart", () => {
+            const session = sceneEl.renderer.xr.getSession();
+            session.requestReferenceSpace("viewer").then((space) => {
+              this.viewerSpace = space;
+              session
+                .requestHitTestSource({ space: this.viewerSpace })
+                .then((source) => {
+                  this.xrHitTestSource = source;
+                });
+            });
+            session.requestReferenceSpace("local-floor").then((space) => {
+              this.refSpace = space;
+            });
+
+            session.addEventListener("select", () => {
+              if (
+                this.reticle.getAttribute("visible") === "true" ||
+                this.reticle.getAttribute("visible") === true
+              ) {
+                const img = document.getElementById("ar-image-entity");
+                if (img) {
+                  const pos = this.reticle.object3D.position;
+                  const rot = this.reticle.object3D.rotation;
+                  img.setAttribute("position", `${pos.x} ${pos.y} ${pos.z}`);
+                  img.setAttribute(
+                    "rotation",
+                    `${THREE.MathUtils.radToDeg(rot.x)} ${THREE.MathUtils.radToDeg(rot.y)} ${THREE.MathUtils.radToDeg(rot.z)}`,
+                  );
+                  img.setAttribute("visible", "true");
+                }
+              }
+            });
+          });
+        },
+        tick: function () {
+          const sceneEl = this.el;
+          if (!sceneEl.is("ar-mode")) return;
+          const frame = sceneEl.frame;
+          if (!frame || !this.xrHitTestSource || !this.refSpace) return;
+
+          const hitTestResults = frame.getHitTestResults(this.xrHitTestSource);
+          if (hitTestResults.length > 0) {
+            const pose = hitTestResults[0].getPose(this.refSpace);
+
+            const normal = new THREE.Vector3(0, 1, 0);
+            normal.applyQuaternion(pose.transform.orientation);
+
+            // Check if the surface is vertical (normal.y should be close to 0)
+            if (Math.abs(normal.y) < 0.2) {
+              this.reticle.setAttribute("visible", "true");
+              this.reticle.object3D.position.copy(pose.transform.position);
+              this.reticle.object3D.quaternion.copy(pose.transform.orientation);
+              this.reticle.object3D.rotateX(-Math.PI / 2);
+            } else {
+              this.reticle.setAttribute("visible", "false");
+            }
+          } else {
+            this.reticle.setAttribute("visible", "false");
+          }
+        },
+      });
+
+      window.onload = () => {
+        cargarGaleria(true);
+      };
     </script>
 
     <!-- Modal RA Real -->
     <div id="modal-ra" class="hidden fixed inset-0 z-[100] bg-black">
-        <button onclick="cerrarModalRA()" class="absolute top-6 right-6 text-white text-3xl opacity-80 hover:opacity-100 transition z-[110]"><i class="fas fa-times"></i></button>
-        <p class="absolute top-4 left-4 bg-black/50 text-white text-xs px-3 py-1 rounded z-[110]">Enfoca a la superficie lisa donde deseas ver la obra</p>
+      <button
+        onclick="cerrarModalRA()"
+        class="absolute top-6 right-6 text-white text-3xl opacity-80 hover:opacity-100 transition z-[110]"
+      >
+        <i class="fas fa-times"></i>
+      </button>
+      <p
+        class="absolute top-4 left-4 bg-black/50 text-white text-xs px-3 py-1 rounded z-[110]"
+      >
+        Enfoca a la superficie lisa donde deseas ver la obra
+      </p>
 
-        <a-scene embedded webxr="optionalFeatures: hit-test; referenceSpaceType: local-floor;" ar-modes="webxr scene-viewer quick-look" vr-mode-ui="enabled: false" ar-wall-placement id="ar-scene" style="width:100%; height:100%;">
-            <!-- We will inject the a-image dynamically -->
-            <a-camera position="0 1.6 0"></a-camera>
-            <a-light type="ambient" color="#ffffff"></a-light>
-        </a-scene>
+      <a-scene
+        embedded
+        webxr="optionalFeatures: hit-test; referenceSpaceType: local-floor;"
+        ar-modes="webxr scene-viewer quick-look"
+        vr-mode-ui="enabled: false"
+        ar-wall-placement
+        id="ar-scene"
+        style="width: 100%; height: 100%"
+      >
+        <!-- We will inject the a-image dynamically -->
+        <a-camera position="0 1.6 0"></a-camera>
+        <a-light type="ambient" color="#ffffff"></a-light>
+      </a-scene>
     </div>
 
     <!-- Modal Desktop info for AR -->
-    <div id="modal-ra-desktop" class="hidden fixed inset-0 z-[100] bg-black/60 items-center justify-center p-4">
-        <div class="bg-white rounded-xl p-6 max-w-sm w-full text-center shadow-xl relative">
-            <button onclick="cerrarModalRADesktop()" class="absolute top-3 right-3 text-gray-400 hover:text-gray-800 transition-colors"><i class="fas fa-times text-xl"></i></button>
-            <div class="w-12 h-12 bg-amber-50 text-amber-700 rounded-full flex items-center justify-center mx-auto mb-4 text-2xl">
-                <i class="fas fa-mobile-alt"></i>
-            </div>
-            <h3 class="text-lg font-semibold text-amber-950 mb-2">Función para móviles</h3>
-            <p class="text-sm text-gray-600">Esta función de Realidad Aumentada está diseñada para móviles. Por favor, abre la web desde tu smartphone para proyectar la obra en tu pared.</p>
-            <button onclick="cerrarModalRADesktop()" class="mt-6 w-full bg-amber-900 text-white py-2.5 rounded-lg text-sm font-medium hover:bg-amber-800 transition-colors">Entendido</button>
+    <div
+      id="modal-ra-desktop"
+      class="hidden fixed inset-0 z-[100] bg-black/60 items-center justify-center p-4"
+    >
+      <div
+        class="bg-white rounded-xl p-6 max-w-sm w-full text-center shadow-xl relative"
+      >
+        <button
+          onclick="cerrarModalRADesktop()"
+          class="absolute top-3 right-3 text-gray-400 hover:text-gray-800 transition-colors"
+        >
+          <i class="fas fa-times text-xl"></i>
+        </button>
+        <div
+          class="w-12 h-12 bg-amber-50 text-amber-700 rounded-full flex items-center justify-center mx-auto mb-4 text-2xl"
+        >
+          <i class="fas fa-mobile-alt"></i>
         </div>
+        <h3 class="text-lg font-semibold text-amber-950 mb-2">
+          Función para móviles
+        </h3>
+        <p class="text-sm text-gray-600">
+          Esta función de Realidad Aumentada está diseñada para móviles. Por
+          favor, abre la web desde tu smartphone para proyectar la obra en tu
+          pared.
+        </p>
+        <button
+          onclick="cerrarModalRADesktop()"
+          class="mt-6 w-full bg-amber-900 text-white py-2.5 rounded-lg text-sm font-medium hover:bg-amber-800 transition-colors"
+        >
+          Entendido
+        </button>
+      </div>
     </div>
-</body>
+  </body>
 </html>
