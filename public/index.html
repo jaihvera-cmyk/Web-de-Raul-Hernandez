@@ -98,7 +98,7 @@
                     <div class="bg-white border border-amber-200 p-5 rounded-xl shadow-sm">
                         <div class="flex items-center justify-between mb-1">
                             <h4 class="text-sm font-semibold text-amber-950"><i class="fas fa-chart-line text-amber-700 mr-2"></i> Visitas Web</h4>
-                            <a href="https://analytics.google.com" target="_blank" class="text-xs bg-amber-50 text-amber-800 px-2 py-1 rounded font-medium border border-amber-100">Abrir Panel</a>
+                            <a href="https://analytics.google.com" target="_blank" rel="noopener noreferrer" class="text-xs bg-amber-50 text-amber-800 px-2 py-1 rounded font-medium border border-amber-100">Abrir Panel</a>
                         </div>
                         <p class="text-xs text-gray-500">Métricas en Google Analytics.</p>
                     </div>
@@ -247,43 +247,27 @@
         function procesarFoto(input) {
             if (input.files && input.files[0]) {
                 const file = input.files[0];
-                const reader = new FileReader();
-                reader.readAsDataURL(file);
-                reader.onload = event => {
-                    const img = new Image();
-                    img.src = event.target.result;
-                    img.onload = () => {
-                        const canvas = document.createElement('canvas');
-                        const MAX_WIDTH = 800;
-                        const scaleSize = MAX_WIDTH / img.width;
-                        canvas.width = MAX_WIDTH;
-                        canvas.height = img.height * scaleSize;
+                window.archivoSeleccionado = file;
+                const url = URL.createObjectURL(file);
 
-                        const ctx = canvas.getContext('2d');
-                        ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+                document.getElementById('obra-id').value = '';
+                document.getElementById('form-titulo').innerText = 'Registrar Nueva Obra';
+                document.getElementById('obra-material').value = '';
+                document.getElementById('obra-ancho').value = '';
+                document.getElementById('obra-alto').value = '';
+                document.getElementById('precio-consultar').checked = true;
+                document.getElementById('obra-precio').value = '';
+                togglePrecioInput();
+                document.getElementById('obra-descripcion').value = '';
+                document.getElementById('obra-estado').value = 'En colección privada';
+                document.getElementById('btn-eliminar-obra').style.display = 'none';
 
-                        const b64 = canvas.toDataURL('image/jpeg', 0.7);
+                document.getElementById('obra-img-b64').value = '';
+                const prev = document.getElementById('form-preview');
+                prev.src = url;
+                prev.classList.remove('hidden');
 
-                        document.getElementById('obra-id').value = '';
-                        document.getElementById('form-titulo').innerText = 'Registrar Nueva Obra';
-                        document.getElementById('obra-material').value = '';
-                        document.getElementById('obra-ancho').value = '';
-                        document.getElementById('obra-alto').value = '';
-                        document.getElementById('precio-consultar').checked = true;
-                        document.getElementById('obra-precio').value = '';
-                        togglePrecioInput();
-                        document.getElementById('obra-descripcion').value = '';
-                        document.getElementById('obra-estado').value = 'En colección privada';
-                        document.getElementById('btn-eliminar-obra').style.display = 'none';
-
-                        document.getElementById('obra-img-b64').value = b64;
-                        const prev = document.getElementById('form-preview');
-                        prev.src = b64;
-                        prev.classList.remove('hidden');
-
-                        mostrarTab('tab-form');
-                    }
-                }
+                mostrarTab('tab-form');
             }
             input.value = '';
         }
@@ -403,12 +387,46 @@
             try {
                 let imgUrl = document.getElementById('obra-img-b64').value;
 
-                // If it's a new base64 image (starts with data:image)
-                if (imgUrl.startsWith('data:image')) {
-                    const res = await fetch(imgUrl);
-                    const blob = await res.blob();
+                if (window.archivoSeleccionado) {
+                    const blob = await new Promise((resolve) => {
+                        const reader = new FileReader();
+                        reader.onload = event => {
+                            const img = new Image();
+                            img.src = event.target.result;
+                            img.onload = () => {
+                                const canvas = document.createElement('canvas');
+                                const MAX_WIDTH = 800;
+                                let width = img.width;
+                                let height = img.height;
+
+                                if (width > MAX_WIDTH) {
+                                    const scaleSize = MAX_WIDTH / width;
+                                    width = MAX_WIDTH;
+                                    height = height * scaleSize;
+                                }
+
+                                canvas.width = width;
+                                canvas.height = height;
+
+                                const ctx = canvas.getContext('2d');
+                                ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+
+                                canvas.toBlob((b) => resolve(b), 'image/jpeg', 0.7);
+                            }
+                        };
+                        reader.readAsDataURL(window.archivoSeleccionado);
+                    });
+
                     const fileRef = storage.ref().child(`obras/${Date.now()}_${Math.floor(Math.random()*10000)}.jpg`);
                     await fileRef.put(blob);
+                    imgUrl = await fileRef.getDownloadURL();
+                    window.archivoSeleccionado = null; // Clear it after processing
+                } else if (imgUrl.startsWith('data:image')) {
+                    // Fallback in case there is some other base64 string left
+                    const res = await fetch(imgUrl);
+                    const b = await res.blob();
+                    const fileRef = storage.ref().child(`obras/${Date.now()}_${Math.floor(Math.random()*10000)}.jpg`);
+                    await fileRef.put(b);
                     imgUrl = await fileRef.getDownloadURL();
                 }
 
