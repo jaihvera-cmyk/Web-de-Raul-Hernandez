@@ -189,14 +189,23 @@
                         const titulo = ob.material || 'Sin título';
                         const dims = ob.dimensiones || 'Sin medidas';
                         const precioTxt = ob.precio === 'Consultar PVP' ? 'Consultar PVP' : (ob.precio ? `${ob.precio} €` : 'Consultar PVP');
-                        let urlImagenPublica = ob.imagen_url || window.location.href;
-                        const mensajeWa = encodeURIComponent(`Hola, estoy interesado en esta obra de Raúl Hernández: ${titulo}. Dimensiones: ${dims}. Precio: ${precioTxt}. ¿Podría darme más información? \n\n${urlImagenPublica}`);
-                        // The flex classes ensure it renders properly across devices and is not hidden
-                        botonWhatsApp = `
-                            <a href="https://wa.me/34692392620?text=${mensajeWa}" target="_blank" class="mt-4 w-full flex items-center justify-center bg-amber-900 text-white py-3 md:py-2.5 rounded-lg text-sm font-medium hover:bg-amber-800 transition-colors">
-                                <i class="fab fa-whatsapp mr-2 text-base md:text-sm md:mr-1"></i> Consultar disponibilidad
-                            </a>
-                        `;
+
+                        if (!ob.imagen_url || !ob.imagen_url.startsWith('http')) {
+                            // Si la URL es asíncrona y aún no está lista, deshabilitamos el botón para que no lance un texto de error.
+                            botonWhatsApp = `
+                                <button disabled class="mt-4 w-full flex items-center justify-center bg-amber-900/60 text-white py-3 md:py-2.5 rounded-lg text-sm font-medium cursor-not-allowed">
+                                    <i class="fab fa-whatsapp mr-2 text-base md:text-sm md:mr-1"></i> Consultar disponibilidad
+                                </button>
+                            `;
+                        } else {
+                            let urlImagenPublica = ob.imagen_url;
+                            const mensajeWa = encodeURIComponent(`Hola, estoy interesado en esta obra de Raúl Hernández: ${titulo}. Dimensiones: ${dims}. Precio: ${precioTxt}. ¿Podría darme más información? \n\n${urlImagenPublica}`);
+                            botonWhatsApp = `
+                                <a href="https://wa.me/34692392620?text=${mensajeWa}" target="_blank" class="mt-4 w-full flex items-center justify-center bg-amber-900 text-white py-3 md:py-2.5 rounded-lg text-sm font-medium hover:bg-amber-800 transition-colors">
+                                    <i class="fab fa-whatsapp mr-2 text-base md:text-sm md:mr-1"></i> Consultar disponibilidad
+                                </a>
+                            `;
+                        }
                     } else if (ob.estado === 'Reservado') {
                         if (modoActual === 'a_la_venta') {
                             bloquePrecio = ob.precio === 'Consultar PVP' ? `<span class="text-sm text-amber-800">Consultar PVP</span>` : (ob.precio ? `<span class="text-lg font-bold text-amber-900">${ob.precio} €</span>` : '');
@@ -250,7 +259,28 @@
             }
         }
 
+        function isMobile() {
+            return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+        }
+
+        function cerrarModalRADesktop() {
+            const m = document.getElementById('modal-ra-desktop');
+            if(m) {
+                m.classList.add('hidden');
+                m.classList.remove('flex');
+            }
+        }
+
         function abrirModalRA(imgUrl, dimensionesStr) {
+            if (!isMobile()) {
+                const desktopModal = document.getElementById('modal-ra-desktop');
+                if (desktopModal) {
+                    desktopModal.classList.remove('hidden');
+                    desktopModal.classList.add('flex');
+                }
+                return;
+            }
+
             if (!imgUrl) {
                 alert("Esta obra no tiene imagen disponible para previsualizar.");
                 return;
@@ -286,6 +316,18 @@
 
             modal.classList.remove('hidden');
             modal.classList.add('block');
+
+            if (scene.hasLoaded) {
+                if (scene.systems.webxr && scene.systems.webxr.sessionController) {
+                     scene.enterAR();
+                } else {
+                     scene.enterVR(); // Will act as enterAR if vr is disabled and AR is enabled
+                }
+            } else {
+                scene.addEventListener('loaded', () => {
+                    scene.enterAR();
+                }, {once: true});
+            }
         }
 
         function cerrarModalRA() {
@@ -308,11 +350,24 @@
         <button onclick="cerrarModalRA()" class="absolute top-6 right-6 text-white text-3xl opacity-80 hover:opacity-100 transition z-[110]"><i class="fas fa-times"></i></button>
         <p class="absolute top-4 left-4 bg-black/50 text-white text-xs px-3 py-1 rounded z-[110]">Enfoca a la superficie lisa donde deseas ver la obra</p>
 
-        <a-scene embedded xr-mode-ui="enabled: true; enterVREnabled: false; enterAREnabled: true" id="ar-scene" style="width:100%; height:100%;">
+        <a-scene embedded webxr="optionalFeatures: hit-test; referenceSpaceType: local-floor;" vr-mode-ui="enterVREnabled: false; enterAREnabled: true" id="ar-scene" style="width:100%; height:100%;">
             <!-- We will inject the a-image dynamically -->
             <a-camera position="0 1.6 0"></a-camera>
             <a-light type="ambient" color="#ffffff"></a-light>
         </a-scene>
+    </div>
+
+    <!-- Modal Desktop info for AR -->
+    <div id="modal-ra-desktop" class="hidden fixed inset-0 z-[100] bg-black/60 items-center justify-center p-4">
+        <div class="bg-white rounded-xl p-6 max-w-sm w-full text-center shadow-xl relative">
+            <button onclick="cerrarModalRADesktop()" class="absolute top-3 right-3 text-gray-400 hover:text-gray-800 transition-colors"><i class="fas fa-times text-xl"></i></button>
+            <div class="w-12 h-12 bg-amber-50 text-amber-700 rounded-full flex items-center justify-center mx-auto mb-4 text-2xl">
+                <i class="fas fa-mobile-alt"></i>
+            </div>
+            <h3 class="text-lg font-semibold text-amber-950 mb-2">Función para móviles</h3>
+            <p class="text-sm text-gray-600">Esta función de Realidad Aumentada está diseñada para móviles. Por favor, abre la web desde tu smartphone para proyectar la obra en tu pared.</p>
+            <button onclick="cerrarModalRADesktop()" class="mt-6 w-full bg-amber-900 text-white py-2.5 rounded-lg text-sm font-medium hover:bg-amber-800 transition-colors">Entendido</button>
+        </div>
     </div>
 </body>
 </html>
