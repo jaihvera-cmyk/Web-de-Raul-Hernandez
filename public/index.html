@@ -12,7 +12,6 @@
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-storage-compat.js"></script>
 
     <style>
         body { font-family: 'Inter', sans-serif; background-color: #fdfbf7; color: #2d2d2d; padding-bottom: 40px; }
@@ -200,21 +199,6 @@
         firebase.initializeApp(firebaseConfig);
         const auth = firebase.auth();
         const db = firebase.firestore();
-        const storage = firebase.storage();
-
-        window.firebaseMod = {};
-        window.firebaseModPromise = Promise.all([
-            import('https://www.gstatic.com/firebasejs/9.23.0/firebase-storage.js'),
-            import('https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js')
-        ]).then(([mod, modApp]) => {
-            const app = modApp.initializeApp(firebaseConfig);
-            window.firebaseMod = {
-                storage: mod.getStorage(app),
-                ref: mod.ref,
-                uploadBytes: mod.uploadBytes,
-                getDownloadURL: mod.getDownloadURL
-            };
-        });
 
         const WHITELIST = ['raulgomero@gmail.com', 'jaihvera@gmail.com'];
 
@@ -401,28 +385,33 @@
             try {
                 let imgUrl = document.getElementById('obra-img-b64').value;
 
-                await window.firebaseModPromise; // Ensure modular SDK is loaded
-                const modStorage = window.firebaseMod.storage;
-                const storageRef = window.firebaseMod.ref;
-                const uploadBytes = window.firebaseMod.uploadBytes;
-                const getDownloadURL = window.firebaseMod.getDownloadURL;
+                if (window.archivoSeleccionado || imgUrl.startsWith('data:image')) {
+                    let blob = window.archivoSeleccionado;
 
-                if (!modStorage) {
-                    throw new Error("Storage instance is undefined");
-                }
+                    if (!blob && imgUrl.startsWith('data:image')) {
+                        const res = await fetch(imgUrl);
+                        blob = await res.blob();
+                    }
 
-                if (window.archivoSeleccionado) {
-                    const fileRef = storageRef(modStorage, `obras/${Date.now()}_${Math.floor(Math.random()*10000)}_${window.archivoSeleccionado.name}`);
-                    await uploadBytes(fileRef, window.archivoSeleccionado);
-                    imgUrl = await getDownloadURL(fileRef);
-                    window.archivoSeleccionado = null; // Clear it after processing
-                } else if (imgUrl.startsWith('data:image')) {
-                    // Fallback in case there is some other base64 string left
-                    const res = await fetch(imgUrl);
-                    const b = await res.blob();
-                    const fileRef = storageRef(modStorage, `obras/${Date.now()}_${Math.floor(Math.random()*10000)}.jpg`);
-                    await uploadBytes(fileRef, b);
-                    imgUrl = await getDownloadURL(fileRef);
+                    if (blob) {
+                        const formData = new FormData();
+                        formData.append('file', blob);
+                        formData.append('upload_preset', 'cuadros_raul');
+
+                        const uploadRes = await fetch('https://api.cloudinary.com/v1_1/hz8hymdp/image/upload', {
+                            method: 'POST',
+                            body: formData
+                        });
+
+                        if (!uploadRes.ok) {
+                            throw new Error('Error subiendo imagen a Cloudinary');
+                        }
+
+                        const uploadData = await uploadRes.json();
+                        imgUrl = uploadData.secure_url;
+
+                        window.archivoSeleccionado = null;
+                    }
                 }
 
                 const payload = {
