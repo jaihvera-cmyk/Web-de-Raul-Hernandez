@@ -180,15 +180,7 @@
                     const estadoObra = (ob.estado || '').toLowerCase();
                     const estaEnVenta = estadoObra.includes('venta') || estadoObra.includes('disponible');
 
-                    // FIND IMAGE URL DYNAMICALLY
-                    console.log("Objeto obra:", ob);
-                    let imageUrl = null;
-                    for (const key in ob) {
-                        if (typeof ob[key] === 'string' && ob[key].startsWith('http')) {
-                            imageUrl = ob[key];
-                            break;
-                        }
-                    }
+                    let imageUrl = ob.imagen_url || null;
 
                     if (estaEnVenta) {
                         if (modoActual === 'a_la_venta') {
