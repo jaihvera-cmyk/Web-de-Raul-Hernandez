@@ -98,7 +98,7 @@
                     <div class="bg-white border border-amber-200 p-5 rounded-xl shadow-sm">
                         <div class="flex items-center justify-between mb-1">
                             <h4 class="text-sm font-semibold text-amber-950"><i class="fas fa-chart-line text-amber-700 mr-2"></i> Visitas Web</h4>
-                            <a href="https://analytics.google.com" target="_blank" rel="external" onclick="window.open(this.href, '_system'); return false;" class="text-xs bg-amber-50 text-amber-800 px-2 py-1 rounded font-medium border border-amber-100">Abrir Panel</a>
+                            <a href="https://analytics.google.com" onclick="abrirAnalytics(event, this.href)" class="text-xs bg-amber-50 text-amber-800 px-2 py-1 rounded font-medium border border-amber-100">Abrir Panel</a>
                         </div>
                         <p class="text-xs text-gray-500">Métricas en Google Analytics.</p>
                     </div>
@@ -485,6 +485,27 @@
             }, { merge: true });
             alert("Biografía actualizada en la web.");
             mostrarTab('tab-home');
+        }
+
+        function abrirAnalytics(event, url) {
+            event.preventDefault();
+            try {
+                const newWindow = window.open(url, '_blank', 'noopener,noreferrer,external');
+                if (!newWindow || newWindow.closed || typeof newWindow.closed === 'undefined') {
+                    throw new Error("Popup blocked");
+                }
+            } catch (e) {
+                if (navigator.share) {
+                    navigator.share({
+                        title: 'Google Analytics - Galería',
+                        url: url
+                    }).catch(console.error);
+                } else {
+                    navigator.clipboard.writeText(url).then(() => {
+                        alert("URL de Analytics copiada al portapapeles. Ábrela en tu navegador (Safari/Chrome).");
+                    });
+                }
+            }
         }
     </script>
 </body>
