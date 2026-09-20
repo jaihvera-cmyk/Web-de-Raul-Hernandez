@@ -202,6 +202,17 @@
         const db = firebase.firestore();
         const storage = firebase.storage();
 
+        window.firebaseMod = {};
+        (async () => {
+            const { initializeApp } = await import('https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js');
+            const { getStorage, ref, uploadBytes, getDownloadURL } = await import('https://www.gstatic.com/firebasejs/9.23.0/firebase-storage.js');
+            const modApp = initializeApp(firebaseConfig, "v9App");
+            window.firebaseMod.storage = getStorage(modApp);
+            window.firebaseMod.ref = ref;
+            window.firebaseMod.uploadBytes = uploadBytes;
+            window.firebaseMod.getDownloadURL = getDownloadURL;
+        })();
+
         const WHITELIST = ['raulgomero@gmail.com', 'jaihvera@gmail.com'];
 
         auth.onAuthStateChanged(user => {
@@ -388,21 +399,46 @@
                 let imgUrl = document.getElementById('obra-img-b64').value;
 
                 if (window.archivoSeleccionado) {
-                    const { getStorage, ref: storageRef, uploadBytes, getDownloadURL } = await import('https://www.gstatic.com/firebasejs/9.23.0/firebase-storage.js');
-                    const modStorage = getStorage(firebase.app());
-                    const fileRef = storageRef(modStorage, `obras/${Date.now()}_${Math.floor(Math.random()*10000)}_${window.archivoSeleccionado.name}`);
+                    const blob = await new Promise((resolve) => {
+                        const reader = new FileReader();
+                        reader.onload = event => {
+                            const img = new Image();
+                            img.src = event.target.result;
+                            img.onload = () => {
+                                const canvas = document.createElement('canvas');
+                                const MAX_WIDTH = 800;
+                                let width = img.width;
+                                let height = img.height;
 
-                    await uploadBytes(fileRef, window.archivoSeleccionado);
+                                if (width > MAX_WIDTH) {
+                                    const scaleSize = MAX_WIDTH / width;
+                                    width = MAX_WIDTH;
+                                    height = height * scaleSize;
+                                }
+
+                                canvas.width = width;
+                                canvas.height = height;
+
+                                const ctx = canvas.getContext('2d');
+                                ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+
+                                canvas.toBlob((b) => resolve(b), 'image/jpeg', 0.7);
+                            }
+                        };
+                        reader.readAsDataURL(window.archivoSeleccionado);
+                    });
+
+                    const { storage: modStorage, ref, uploadBytes, getDownloadURL } = window.firebaseMod;
+                    const fileRef = ref(modStorage, `obras/${Date.now()}_${Math.floor(Math.random()*10000)}.jpg`);
+                    await uploadBytes(fileRef, blob);
                     imgUrl = await getDownloadURL(fileRef);
                     window.archivoSeleccionado = null; // Clear it after processing
                 } else if (imgUrl.startsWith('data:image')) {
                     // Fallback in case there is some other base64 string left
-                    const { getStorage, ref: storageRef, uploadBytes, getDownloadURL } = await import('https://www.gstatic.com/firebasejs/9.23.0/firebase-storage.js');
-                    const modStorage = getStorage(firebase.app());
-
                     const res = await fetch(imgUrl);
                     const b = await res.blob();
-                    const fileRef = storageRef(modStorage, `obras/${Date.now()}_${Math.floor(Math.random()*10000)}.jpg`);
+                    const { storage: modStorage, ref, uploadBytes, getDownloadURL } = window.firebaseMod;
+                    const fileRef = ref(modStorage, `obras/${Date.now()}_${Math.floor(Math.random()*10000)}.jpg`);
                     await uploadBytes(fileRef, b);
                     imgUrl = await getDownloadURL(fileRef);
                 }
