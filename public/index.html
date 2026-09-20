@@ -48,11 +48,11 @@
                 <input type="file" id="input-galeria" accept="image/*" class="hidden" onchange="procesarFoto(this)">
 
                 <div class="grid grid-cols-2 gap-3">
-                    <button onclick="document.getElementById('input-camara').click()" class="bg-gradient-to-br from-amber-800 to-amber-900 text-white p-5 rounded-xl text-center shadow-md active:scale-95 transition-transform">
+                    <button onclick="document.getElementById('input-camara').click()" class="md:hidden bg-gradient-to-br from-amber-800 to-amber-900 text-white p-5 rounded-xl text-center shadow-md active:scale-95 transition-transform">
                         <i class="fas fa-camera text-2xl mb-2 text-amber-200"></i>
                         <h3 class="text-sm font-medium tracking-wide">Cámara</h3>
                     </button>
-                    <button onclick="document.getElementById('input-galeria').click()" class="bg-white border border-amber-200 text-amber-900 p-5 rounded-xl text-center shadow-sm active:scale-95 transition-transform">
+                    <button onclick="document.getElementById('input-galeria').click()" class="col-span-1 md:col-span-2 bg-white border border-amber-200 text-amber-900 p-5 rounded-xl text-center shadow-sm active:scale-95 transition-transform">
                         <i class="fas fa-image text-2xl mb-2 text-amber-700"></i>
                         <h3 class="text-sm font-medium tracking-wide">Galería</h3>
                     </button>
@@ -97,7 +97,7 @@
                     <div class="bg-white border border-amber-200 p-5 rounded-xl shadow-sm">
                         <div class="flex items-center justify-between mb-1">
                             <h4 class="text-sm font-semibold text-amber-950"><i class="fas fa-chart-line text-amber-700 mr-2"></i> Visitas Web</h4>
-                            <a href="https://analytics.google.com" onclick="abrirAnalytics(event, this.href)" class="text-xs bg-amber-50 text-amber-800 px-2 py-1 rounded font-medium border border-amber-100">Abrir Panel</a>
+                            <a href="https://analytics.google.com/analytics/web/" onclick="abrirAnalytics(event, this.href)" class="text-xs bg-amber-50 text-amber-800 px-2 py-1 rounded font-medium border border-amber-100">Abrir Panel</a>
                         </div>
                         <p class="text-xs text-gray-500">Métricas en Google Analytics.</p>
                     </div>
@@ -121,6 +121,7 @@
 
                     <div class="bg-amber-50 rounded-lg overflow-hidden flex justify-center mb-4">
                         <img id="form-preview" src="" class="max-h-48 object-contain hidden w-full">
+                        <input type="file" id="input-editar-foto" accept="image/*" class="w-full mt-2 text-xs p-2 border border-dashed border-amber-300 rounded" onchange="window.archivoSeleccionado = this.files[0]; document.getElementById('form-preview').src = URL.createObjectURL(this.files[0]); document.getElementById('form-preview').classList.remove('hidden');">
                     </div>
 
                     <div>
@@ -385,13 +386,10 @@
             try {
                 let imgUrl = document.getElementById('obra-img-b64').value;
 
-                if (window.archivoSeleccionado || imgUrl.startsWith('data:image')) {
+                if (window.archivoSeleccionado) {
                     let blob = window.archivoSeleccionado;
 
-                    if (!blob && imgUrl.startsWith('data:image')) {
-                        const res = await fetch(imgUrl);
-                        blob = await res.blob();
-                    }
+
 
                     if (blob) {
                         const formData = new FormData();
