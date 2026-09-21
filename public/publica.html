@@ -394,8 +394,7 @@
                 mv.setAttribute("camera-controls", "");
 
                 // Parse dimensions
-                let widthMeters = 1;
-                let heightMeters = 1;
+
                 let wCm = 100;
                 let hCm = 100;
                 if (ob.dimensiones) {
@@ -403,17 +402,15 @@
                   if (dims && dims.length >= 3) {
                     wCm = parseInt(dims[1], 10);
                     hCm = parseInt(dims[2], 10);
-                    widthMeters = wCm / 100;
-                    heightMeters = hCm / 100;
                   }
                 }
-                mv.setAttribute("scale", `${widthMeters} ${heightMeters} 0.05`);
+                mv.setAttribute("scale", `${wCm / 100} ${hCm / 100} 0.05`);
 
                 // Add hotspots
                 const hotspotBottom = document.createElement("div");
                 hotspotBottom.slot = "hotspot-width";
                 hotspotBottom.className = "ar-hotspot";
-                hotspotBottom.dataset.position = `0 -${heightMeters / 2} 0.05`;
+                hotspotBottom.dataset.position = `0 -${hCm / 100 / 2} 0.05`;
                 hotspotBottom.dataset.normal = "0 0 1";
                 hotspotBottom.innerHTML = `<div class="ar-dimension-label">${wCm} cm</div>`;
                 mv.appendChild(hotspotBottom);
@@ -421,7 +418,7 @@
                 const hotspotRight = document.createElement("div");
                 hotspotRight.slot = "hotspot-height";
                 hotspotRight.className = "ar-hotspot";
-                hotspotRight.dataset.position = `${widthMeters / 2} 0 0.05`;
+                hotspotRight.dataset.position = `${wCm / 100 / 2} 0 0.05`;
                 hotspotRight.dataset.normal = "0 0 1";
                 hotspotRight.innerHTML = `<div class="ar-dimension-label">${hCm} cm</div>`;
                 mv.appendChild(hotspotRight);
@@ -544,8 +541,6 @@
           mv.setAttribute("ar-placement", "wall");
           mv.setAttribute("camera-controls", "");
 
-          let widthMeters = 1;
-          let heightMeters = 1;
           let wCm = 100;
           let hCm = 100;
           if (dimensionesStr) {
@@ -553,16 +548,14 @@
             if (dims && dims.length >= 3) {
               wCm = parseInt(dims[1], 10);
               hCm = parseInt(dims[2], 10);
-              widthMeters = wCm / 100;
-              heightMeters = hCm / 100;
             }
           }
-          mv.setAttribute("scale", `${widthMeters} ${heightMeters} 0.05`);
+          mv.setAttribute("scale", `${wCm / 100} ${hCm / 100} 0.05`);
 
           const hotspotBottom = document.createElement("div");
           hotspotBottom.slot = "hotspot-width";
           hotspotBottom.className = "ar-hotspot";
-          hotspotBottom.dataset.position = `0 -${heightMeters / 2} 0.05`;
+          hotspotBottom.dataset.position = `0 -${hCm / 100 / 2} 0.05`;
           hotspotBottom.dataset.normal = "0 0 1";
           hotspotBottom.innerHTML = `<div class="ar-dimension-label">${wCm} cm</div>`;
           mv.appendChild(hotspotBottom);
@@ -570,7 +563,7 @@
           const hotspotRight = document.createElement("div");
           hotspotRight.slot = "hotspot-height";
           hotspotRight.className = "ar-hotspot";
-          hotspotRight.dataset.position = `${widthMeters / 2} 0 0.05`;
+          hotspotRight.dataset.position = `${wCm / 100 / 2} 0 0.05`;
           hotspotRight.dataset.normal = "0 0 1";
           hotspotRight.innerHTML = `<div class="ar-dimension-label">${hCm} cm</div>`;
           mv.appendChild(hotspotRight);
