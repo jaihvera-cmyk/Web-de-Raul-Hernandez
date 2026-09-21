@@ -76,7 +76,22 @@
         border-color: #92400e;
         font-weight: 500;
       }
+
+      .ar-hotspot {
+        display: block;
+        padding: 4px 8px;
+        background: rgba(0, 0, 0, 0.7);
+        color: white;
+        border-radius: 4px;
+        font-family: sans-serif;
+        font-size: 14px;
+        pointer-events: none;
+      }
+      .ar-dimension-label {
+        white-space: nowrap;
+      }
     </style>
+
     <script src="https://aframe.io/releases/1.4.2/aframe.min.js"></script>
     <script
       type="module"
@@ -374,9 +389,43 @@
                 mv.setAttribute("src", "lienzo.glb");
                 mv.setAttribute("ar", "");
                 mv.setAttribute("ar-modes", "webxr scene-viewer quick-look");
+
                 mv.setAttribute("ar-placement", "wall");
                 mv.setAttribute("camera-controls", "");
-                mv.setAttribute("ar-scale", "auto");
+
+                // Parse dimensions
+                let widthMeters = 1;
+                let heightMeters = 1;
+                let wCm = 100;
+                let hCm = 100;
+                if (ob.dimensiones) {
+                  const dims = ob.dimensiones.match(/(\d+)[x\s*]+(\d+)/i);
+                  if (dims && dims.length >= 3) {
+                    wCm = parseInt(dims[1], 10);
+                    hCm = parseInt(dims[2], 10);
+                    widthMeters = wCm / 100;
+                    heightMeters = hCm / 100;
+                  }
+                }
+                mv.setAttribute("scale", `${widthMeters} ${heightMeters} 0.05`);
+
+                // Add hotspots
+                const hotspotBottom = document.createElement("div");
+                hotspotBottom.slot = "hotspot-width";
+                hotspotBottom.className = "ar-hotspot";
+                hotspotBottom.dataset.position = `0 -${heightMeters / 2} 0.05`;
+                hotspotBottom.dataset.normal = "0 0 1";
+                hotspotBottom.innerHTML = `<div class="ar-dimension-label">${wCm} cm</div>`;
+                mv.appendChild(hotspotBottom);
+
+                const hotspotRight = document.createElement("div");
+                hotspotRight.slot = "hotspot-height";
+                hotspotRight.className = "ar-hotspot";
+                hotspotRight.dataset.position = `${widthMeters / 2} 0 0.05`;
+                hotspotRight.dataset.normal = "0 0 1";
+                hotspotRight.innerHTML = `<div class="ar-dimension-label">${hCm} cm</div>`;
+                mv.appendChild(hotspotRight);
+
                 mv.setAttribute(
                   "style",
                   "position: absolute; left: -9999px; top: -9999px; width: 1px; height: 1px;",
@@ -491,9 +540,41 @@
           mv.setAttribute("src", "lienzo.glb");
           mv.setAttribute("ar", "");
           mv.setAttribute("ar-modes", "webxr scene-viewer quick-look");
+
           mv.setAttribute("ar-placement", "wall");
           mv.setAttribute("camera-controls", "");
-          mv.setAttribute("ar-scale", "auto");
+
+          let widthMeters = 1;
+          let heightMeters = 1;
+          let wCm = 100;
+          let hCm = 100;
+          if (dimensionesStr) {
+            const dims = dimensionesStr.match(/(\d+)[x\s*]+(\d+)/i);
+            if (dims && dims.length >= 3) {
+              wCm = parseInt(dims[1], 10);
+              hCm = parseInt(dims[2], 10);
+              widthMeters = wCm / 100;
+              heightMeters = hCm / 100;
+            }
+          }
+          mv.setAttribute("scale", `${widthMeters} ${heightMeters} 0.05`);
+
+          const hotspotBottom = document.createElement("div");
+          hotspotBottom.slot = "hotspot-width";
+          hotspotBottom.className = "ar-hotspot";
+          hotspotBottom.dataset.position = `0 -${heightMeters / 2} 0.05`;
+          hotspotBottom.dataset.normal = "0 0 1";
+          hotspotBottom.innerHTML = `<div class="ar-dimension-label">${wCm} cm</div>`;
+          mv.appendChild(hotspotBottom);
+
+          const hotspotRight = document.createElement("div");
+          hotspotRight.slot = "hotspot-height";
+          hotspotRight.className = "ar-hotspot";
+          hotspotRight.dataset.position = `${widthMeters / 2} 0 0.05`;
+          hotspotRight.dataset.normal = "0 0 1";
+          hotspotRight.innerHTML = `<div class="ar-dimension-label">${hCm} cm</div>`;
+          mv.appendChild(hotspotRight);
+
           mv.setAttribute(
             "style",
             "position: absolute; left: -9999px; top: -9999px; width: 1px; height: 1px;",
