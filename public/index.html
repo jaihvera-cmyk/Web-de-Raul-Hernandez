@@ -539,12 +539,12 @@
                           <div class="w-16 h-16 bg-gray-100 rounded overflow-hidden flex-shrink-0">
                               ${d.imagen_url ? `<img src="${d.imagen_url}" class="w-full h-full object-cover">` : ""}
                           </div>
-                          <div class="flex-grow">
-                              <h4 class="text-sm font-semibold text-gray-800">${mat}</h4>
-                              <p class="text-xs text-gray-500">${dim}</p>
-                              <span class="inline-block mt-1 text-[10px] bg-amber-50 text-amber-800 px-2 py-0.5 rounded uppercase">${d.estado || "Privada"}</span>
+                          <div class="flex-grow min-w-0">
+                              <h4 class="text-sm font-semibold text-gray-800 truncate">${mat}</h4>
+                              <p class="text-xs text-gray-500 truncate">${dim}</p>
+                              <span class="inline-block mt-1 text-[10px] bg-amber-50 text-amber-800 px-2 py-0.5 rounded uppercase truncate max-w-full">${d.estado || "Privada"}</span>
                           </div>
-                          <i class="fas fa-pen text-gray-400"></i>
+                          <i class="fas fa-pen text-gray-400 flex-shrink-0"></i>
                       `;
             card.onclick = () => cargarObraParaEditar(doc.id, d);
             container.appendChild(card);
