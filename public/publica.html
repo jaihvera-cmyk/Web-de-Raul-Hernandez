@@ -396,14 +396,17 @@
 
             const priceStatusContainer = document.createElement("div");
             priceStatusContainer.className =
-              "flex justify-between items-center";
+              "flex justify-between items-center mb-4";
 
-            const priceSpan = document.createElement("span");
+            const priceSpanContainer = document.createElement("div");
+            priceSpanContainer.className = "flex items-center gap-3";
+
             let showPrice = false;
 
             if (estaEnVenta || esReservado) {
               if (modoActual === "a_la_venta") {
                 showPrice = true;
+                const priceSpan = document.createElement("span");
                 if (ob.precio && ob.precio !== "Consultar PVP") {
                   priceSpan.className = "text-lg font-bold text-amber-900";
                   priceSpan.textContent = `${ob.precio} €`;
@@ -411,15 +414,20 @@
                   priceSpan.className = "text-sm text-amber-800";
                   priceSpan.textContent = "Consultar PVP";
                 }
+                priceSpanContainer.appendChild(priceSpan);
               }
             }
 
+            const scaleLabel = document.createElement("span");
+            scaleLabel.className =
+              "text-[10px] text-gray-400 uppercase tracking-wider font-medium";
             if (showPrice) {
-              priceStatusContainer.appendChild(priceSpan);
-            } else {
-              const emptySpan = document.createElement("span");
-              priceStatusContainer.appendChild(emptySpan);
+              scaleLabel.className += " border-l border-gray-200 pl-3";
             }
+            scaleLabel.textContent = "Comparación de escala";
+            priceSpanContainer.appendChild(scaleLabel);
+
+            priceStatusContainer.appendChild(priceSpanContainer);
 
             const statusSpan = document.createElement("span");
             statusSpan.className =
@@ -431,7 +439,7 @@
 
             if (estaEnVenta) {
               const waContainer = document.createElement("div");
-              waContainer.className = "mt-4 w-full";
+              waContainer.className = "w-full mb-4";
 
               if (!imageUrl) {
                 const waDiv = document.createElement("div");
@@ -476,19 +484,12 @@
 
             const scaleARContainer = document.createElement("div");
             scaleARContainer.className =
-              "w-full flex flex-wrap justify-between items-end mt-4 gap-2";
-
-            const scaleVisualContainer = document.createElement("div");
-            scaleVisualContainer.className = "flex flex-col";
-
-            const scaleLabel = document.createElement("span");
-            scaleLabel.className =
-              "text-[10px] text-gray-500 uppercase tracking-wider mb-1";
-            scaleLabel.textContent = "Comparación de escala";
-            scaleVisualContainer.appendChild(scaleLabel);
+              "w-full flex justify-between items-end gap-2";
 
             const scaleFiguresContainer = document.createElement("div");
-            scaleFiguresContainer.className = "flex items-end gap-1";
+            scaleFiguresContainer.className =
+              "relative w-32 border-b border-gray-200";
+            scaleFiguresContainer.style.height = "60px";
 
             let wCm = 50;
             let hCm = 50;
@@ -508,18 +509,19 @@
 
             const personSvg = document.createElement("div");
             personSvg.innerHTML =
-              '<svg fill="#9ca3af" height="40px" width="15px" viewBox="0 0 320 512"><path d="M112 48a48 48 0 1 1 96 0 48 48 0 1 1 -96 0zm40 304V480c0 17.7-14.3 32-32 32s-32-14.3-32-32V256.9L59.4 304.5c-9.1 15.1-28.8 20-43.9 10.9s-20-28.8-10.9-43.9l58.3-97c17.4-28.9 48.6-46.6 82.3-46.6h29.7c33.7 0 64.9 17.7 82.3 46.6l58.3 97c9.1 15.1 4.2 34.8-10.9 43.9s-34.8 4.2-43.9-10.9L232 256.9V480c0 17.7-14.3 32-32 32s-32-14.3-32-32V352H152z"/></svg>';
+              '<svg class="absolute bottom-0 left-0" fill="#9ca3af" width="12" height="40" viewBox="0 0 16 54" xmlns="http://www.w3.org/2000/svg"><circle cx="8" cy="6" r="4.5" /><path d="M8 13c-2.5 0-4.5 2-4.5 4.5v12h2.5v22h4v-22h2.5v-12c0-2.5-2-4.5-4.5-4.5z" /></svg>';
             scaleFiguresContainer.appendChild(personSvg.firstChild);
 
             const artVisual = document.createElement("div");
             artVisual.style.height = `${artHeightPx}px`;
             artVisual.style.width = `${artWidthPx}px`;
+            artVisual.style.left = "24px";
+            artVisual.style.bottom = `${26.66 - artHeightPx / 2}px`;
             artVisual.className =
-              "bg-amber-100 border border-amber-300 shadow-sm";
+              "absolute bg-amber-100 border border-amber-300 shadow-sm";
             scaleFiguresContainer.appendChild(artVisual);
 
-            scaleVisualContainer.appendChild(scaleFiguresContainer);
-            scaleARContainer.appendChild(scaleVisualContainer);
+            scaleARContainer.appendChild(scaleFiguresContainer);
 
             const raLink = document.createElement("a");
             raLink.href = "javascript:void(0)";
