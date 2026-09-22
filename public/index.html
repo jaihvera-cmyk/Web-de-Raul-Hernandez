@@ -533,60 +533,133 @@
             const dim = d.dimensiones || "Sin medidas";
 
             const card = document.createElement("div");
-            card.className =
-              "bg-white border border-gray-200 rounded-lg p-3 flex gap-4 items-center shadow-sm cursor-pointer hover:border-amber-400";
+            card.className = "flex flex-col h-full bg-white rounded-lg shadow-md p-4 cursor-pointer hover:border-amber-400 border border-gray-200 relative";
 
-            // Image Container
-            const imgContainer = document.createElement("div");
-            imgContainer.className =
-              "w-16 h-16 bg-gray-100 rounded overflow-hidden flex-shrink-0";
-            if (d.imagen_url) {
+            // TOP WRAPPER
+            const topWrapper = document.createElement("div");
+            topWrapper.className = "flex-1";
+
+            // 1. Cover Image
+            const imageContainer = document.createElement("div");
+            imageContainer.className = "h-64 bg-amber-50 overflow-hidden flex items-center justify-center relative group mb-3 rounded-md";
+
+            const imageUrl = d.imagen_url;
+            if (imageUrl) {
               const img = document.createElement("img");
-              img.src = d.imagen_url;
-              img.className = "w-full h-full object-cover";
-              imgContainer.appendChild(img);
+              img.src = imageUrl;
+              img.loading = "lazy";
+              img.className = "w-full h-full object-contain transition-transform duration-500 group-hover:scale-105";
+              imageContainer.appendChild(img);
+            } else {
+              const icon = document.createElement("i");
+              icon.className = "fas fa-image text-amber-200 text-4xl";
+              imageContainer.appendChild(icon);
             }
-            card.appendChild(imgContainer);
+            topWrapper.appendChild(imageContainer);
 
-            // Details Container
-            const detailsContainer = document.createElement("div");
-            detailsContainer.className = "flex-grow min-w-0";
-
-            const titleElement = document.createElement("h4");
-            titleElement.className =
-              "text-sm font-semibold text-gray-800 truncate";
-            titleElement.textContent = mat;
-            detailsContainer.appendChild(titleElement);
-
-            const dimElement = document.createElement("p");
-            dimElement.className = "text-xs text-gray-500 truncate";
-            dimElement.textContent = dim;
-            detailsContainer.appendChild(dimElement);
-
-            const statusElement = document.createElement("span");
-            statusElement.className =
-              "inline-block mt-1 text-[10px] bg-amber-50 text-amber-800 px-2 py-0.5 rounded uppercase truncate block max-w-full";
-            statusElement.textContent = d.estado || "Privada";
-            detailsContainer.appendChild(statusElement);
-
-            if (tipo === "a_la_venta" && d.precio) {
-              const precioElement = document.createElement("p");
-              precioElement.className = "text-xs font-semibold text-amber-900 mt-1";
-              precioElement.textContent = d.precio === "Consultar PVP" ? d.precio : `${d.precio} €`;
-              detailsContainer.appendChild(precioElement);
-            }
+            // Admin specific info
+            const adminInfoRow = document.createElement("div");
+            adminInfoRow.className = "flex justify-between items-center mb-1";
 
             const idElement = document.createElement("p");
-            idElement.className = "text-[10px] text-gray-400 font-mono mt-1";
+            idElement.className = "text-[10px] text-gray-400 font-mono";
             idElement.textContent = `#${doc.id.substring(0, 5)}`;
-            detailsContainer.appendChild(idElement);
+            adminInfoRow.appendChild(idElement);
 
-            card.appendChild(detailsContainer);
-
-            // Icon
             const iconElement = document.createElement("i");
-            iconElement.className = "fas fa-pen text-gray-400 flex-shrink-0";
-            card.appendChild(iconElement);
+            iconElement.className = "fas fa-pen text-gray-400 flex-shrink-0 text-xs";
+            adminInfoRow.appendChild(iconElement);
+
+            topWrapper.appendChild(adminInfoRow);
+
+            // 2. Technique
+            const materialP = document.createElement("p");
+            materialP.className = "text-xs text-amber-700 font-medium uppercase tracking-wider mb-1";
+            materialP.textContent = d.material || "Técnica mixta";
+            topWrapper.appendChild(materialP);
+
+            // 3. Dimensions and Price
+            const dimPriceRow = document.createElement("div");
+            dimPriceRow.className = "flex justify-between items-center";
+
+            const dimensionesH3 = document.createElement("h3");
+            dimensionesH3.className = "text-base font-semibold text-amber-950";
+            dimensionesH3.textContent = d.dimensiones || "Dimensiones no esp.";
+            dimPriceRow.appendChild(dimensionesH3);
+
+            let showPrice = false;
+
+            if (tipo === "a_la_venta" && d.precio) {
+              const priceSpan = document.createElement("span");
+              priceSpan.className = "text-base font-bold text-amber-900";
+              priceSpan.textContent = d.precio === "Consultar PVP" ? d.precio : `${d.precio} €`;
+              dimPriceRow.appendChild(priceSpan);
+            }
+
+            topWrapper.appendChild(dimPriceRow);
+
+            // Horizontal Divider
+            const divider1 = document.createElement("hr");
+            divider1.className = "my-3 border-gray-200";
+            topWrapper.appendChild(divider1);
+
+            card.appendChild(topWrapper);
+
+            // BOTTOM WRAPPER
+            const bottomWrapper = document.createElement("div");
+            bottomWrapper.className = "mt-auto";
+
+            // Labels Row
+            const labelsRow = document.createElement("div");
+            labelsRow.className = "flex justify-between items-end mb-1";
+
+            const scaleLabel = document.createElement("span");
+            scaleLabel.className = "text-[10px] text-gray-500 font-bold tracking-wider";
+            scaleLabel.textContent = "ESCALA";
+            labelsRow.appendChild(scaleLabel);
+
+            // 6. Availability Tag
+            const statusSpan = document.createElement("span");
+            statusSpan.className = "text-[10px] px-2 py-1 bg-amber-50 text-amber-800 rounded font-medium uppercase tracking-wider";
+            statusSpan.textContent = d.estado || "En colección privada";
+            labelsRow.appendChild(statusSpan);
+
+            bottomWrapper.appendChild(labelsRow);
+
+            // Visual Scale & AR Row
+            const scaleARContainer = document.createElement("div");
+            scaleARContainer.className = "flex justify-between items-center";
+
+            // Left Side: Silhouette + Scale Box
+            const leftSide = document.createElement("div");
+            leftSide.className = "flex items-center gap-2";
+
+            // SVG
+            const svgWrapper = document.createElement("div");
+            svgWrapper.innerHTML = `<svg viewBox="0 0 320 512" class="h-16 w-auto text-gray-400" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><path d="M112 48a48 48 0 1 1 96 0 48 48 0 1 1 -96 0zm40 304V480c0 17.7-14.3 32-32 32s-32-14.3-32-32V256.9L59.4 304.5c-9.1 15.1-28.8 20-43.9 10.9s-20-28.8-10.9-43.9l58.3-97c17.4-28.9 48.6-46.6 82.3-46.6h29.7c33.7 0 64.9 17.7 82.3 46.6l58.3 97c9.1 15.1 4.2 34.8-10.9 43.9s-34.8 4.2-43.9-10.9L232 256.9V480c0 17.7-14.3 32-32 32s-32-14.3-32-32V352H152z"/></svg>`;
+            leftSide.appendChild(svgWrapper.firstElementChild);
+
+            // MATH
+            let wCm = 50;
+            let hCm = 50;
+            if (d.dimensiones) {
+              const dimsParsed = d.dimensiones.match(/(\d+(?:\.\d+)?)[x\s*]+(\d+(?:\.\d+)?)/i);
+              if (dimsParsed && dimsParsed.length >= 3) {
+                wCm = parseFloat(dimsParsed[1]);
+                hCm = parseFloat(dimsParsed[2]);
+              }
+            }
+
+            const artVisual = document.createElement("div");
+            artVisual.style.height = `calc((${hCm} / 175) * 64px)`;
+            artVisual.style.width = `calc((${wCm} / 175) * 64px)`;
+            artVisual.className = "border-2 border-yellow-500 bg-yellow-100/30";
+            leftSide.appendChild(artVisual);
+
+            scaleARContainer.appendChild(leftSide);
+
+            bottomWrapper.appendChild(scaleARContainer);
+            card.appendChild(bottomWrapper);
 
             card.onclick = () => cargarObraParaEditar(doc.id, d);
             container.appendChild(card);
