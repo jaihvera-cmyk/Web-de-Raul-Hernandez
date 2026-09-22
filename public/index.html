@@ -535,17 +535,47 @@
             const card = document.createElement("div");
             card.className =
               "bg-white border border-gray-200 rounded-lg p-3 flex gap-4 items-center shadow-sm cursor-pointer hover:border-amber-400";
-            card.innerHTML = `
-                          <div class="w-16 h-16 bg-gray-100 rounded overflow-hidden flex-shrink-0">
-                              ${d.imagen_url ? `<img src="${d.imagen_url}" class="w-full h-full object-cover">` : ""}
-                          </div>
-                          <div class="flex-grow min-w-0">
-                              <h4 class="text-sm font-semibold text-gray-800 truncate">${mat}</h4>
-                              <p class="text-xs text-gray-500 truncate">${dim}</p>
-                              <span class="inline-block mt-1 text-[10px] bg-amber-50 text-amber-800 px-2 py-0.5 rounded uppercase truncate block max-w-full">${d.estado || "Privada"}</span>
-                          </div>
-                          <i class="fas fa-pen text-gray-400 flex-shrink-0"></i>
-                      `;
+
+            // Image Container
+            const imgContainer = document.createElement("div");
+            imgContainer.className =
+              "w-16 h-16 bg-gray-100 rounded overflow-hidden flex-shrink-0";
+            if (d.imagen_url) {
+              const img = document.createElement("img");
+              img.src = d.imagen_url;
+              img.className = "w-full h-full object-cover";
+              imgContainer.appendChild(img);
+            }
+            card.appendChild(imgContainer);
+
+            // Details Container
+            const detailsContainer = document.createElement("div");
+            detailsContainer.className = "flex-grow min-w-0";
+
+            const titleElement = document.createElement("h4");
+            titleElement.className =
+              "text-sm font-semibold text-gray-800 truncate";
+            titleElement.textContent = mat;
+            detailsContainer.appendChild(titleElement);
+
+            const dimElement = document.createElement("p");
+            dimElement.className = "text-xs text-gray-500 truncate";
+            dimElement.textContent = dim;
+            detailsContainer.appendChild(dimElement);
+
+            const statusElement = document.createElement("span");
+            statusElement.className =
+              "inline-block mt-1 text-[10px] bg-amber-50 text-amber-800 px-2 py-0.5 rounded uppercase truncate block max-w-full";
+            statusElement.textContent = d.estado || "Privada";
+            detailsContainer.appendChild(statusElement);
+
+            card.appendChild(detailsContainer);
+
+            // Icon
+            const iconElement = document.createElement("i");
+            iconElement.className = "fas fa-pen text-gray-400 flex-shrink-0";
+            card.appendChild(iconElement);
+
             card.onclick = () => cargarObraParaEditar(doc.id, d);
             container.appendChild(card);
           });
