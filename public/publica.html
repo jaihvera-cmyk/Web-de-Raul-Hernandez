@@ -122,6 +122,7 @@
             href="https://instagram.com/raulhernandezme"
             target="_blank"
             rel="noopener noreferrer"
+            onclick="if(typeof gtag !== 'undefined') gtag('event', 'click_instagram');"
             class="text-amber-800 hover:text-amber-600 transition-colors flex items-center gap-2 bg-amber-50 px-3 py-1.5 rounded-full border border-amber-200 text-sm font-medium"
           >
             <i class="fab fa-instagram text-lg"></i>
@@ -139,10 +140,10 @@
         >
           Mi Obra
         </button>
-        <button class="nav-btn" onclick="cambiarSeccion('a_la_venta', this)">
+        <button class="nav-btn" onclick="if(typeof gtag !== 'undefined') gtag('event', 'nav_venta'); cambiarSeccion('a_la_venta', this)">
           A la Venta
         </button>
-        <button class="nav-btn" onclick="cambiarSeccion('quien_soy', this)">
+        <button class="nav-btn" onclick="if(typeof gtag !== 'undefined') gtag('event', 'nav_biografia'); cambiarSeccion('quien_soy', this)">
           Quién Soy
         </button>
       </nav>
@@ -205,6 +206,7 @@
           <a
             href="https://instagram.com/raulhernandezme"
             target="_blank"
+            onclick="if(typeof gtag !== 'undefined') gtag('event', 'click_instagram');"
             class="hover:text-white transition-colors"
             ><i class="fab fa-instagram text-lg"></i
           ></a>

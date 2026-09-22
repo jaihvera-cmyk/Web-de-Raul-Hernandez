@@ -1,3 +1,6 @@
-127.0.0.1 - - [22/Sep/2026 17:08:12] "HEAD / HTTP/1.1" 200 -
-127.0.0.1 - - [22/Sep/2026 17:10:10] "GET /index.html HTTP/1.1" 200 -
-127.0.0.1 - - [22/Sep/2026 17:10:10] "GET /firma_transparente.png HTTP/1.1" 200 -
+127.0.0.1 - - [22/Sep/2026 17:27:57] "GET /index.html HTTP/1.1" 200 -
+127.0.0.1 - - [22/Sep/2026 17:27:57] "GET /firma_transparente.png HTTP/1.1" 200 -
+127.0.0.1 - - [22/Sep/2026 17:28:46] "GET /index.html HTTP/1.1" 200 -
+127.0.0.1 - - [22/Sep/2026 17:28:46] "GET /firma_transparente.png HTTP/1.1" 200 -
+127.0.0.1 - - [22/Sep/2026 17:29:38] "GET /index.html HTTP/1.1" 200 -
+127.0.0.1 - - [22/Sep/2026 17:29:38] "GET /firma_transparente.png HTTP/1.1" 200 -
