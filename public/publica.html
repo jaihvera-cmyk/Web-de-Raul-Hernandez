@@ -392,6 +392,8 @@
 
                 mv.setAttribute("ar-placement", "wall");
                 mv.setAttribute("camera-controls", "");
+                mv.setAttribute("shadow-intensity", "1");
+                mv.setAttribute("shadow-softness", "0.5");
 
                 // Parse dimensions
 
@@ -433,7 +435,11 @@
                   "load",
                   async () => {
                     try {
-                      const texture = await mv.createTexture(imageUrl);
+                      const arImageUrl = imageUrl.replace(
+                        "/upload/",
+                        "/upload/w_1024,f_auto,q_auto/",
+                      );
+                      const texture = await mv.createTexture(arImageUrl);
                       if (
                         mv.model &&
                         mv.model.materials &&
@@ -540,6 +546,8 @@
 
           mv.setAttribute("ar-placement", "wall");
           mv.setAttribute("camera-controls", "");
+          mv.setAttribute("shadow-intensity", "1");
+          mv.setAttribute("shadow-softness", "0.5");
 
           let wCm = 100;
           let hCm = 100;
