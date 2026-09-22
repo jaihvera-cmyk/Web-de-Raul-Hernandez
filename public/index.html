@@ -533,7 +533,8 @@
             const dim = d.dimensiones || "Sin medidas";
 
             const card = document.createElement("div");
-            card.className = "flex flex-col h-full bg-white rounded-lg shadow-md p-4 cursor-pointer hover:border-amber-400 border border-gray-200 relative";
+            card.className =
+              "flex flex-col h-full bg-white rounded-lg shadow-md p-4 cursor-pointer hover:border-amber-400 border border-gray-200 relative";
 
             // TOP WRAPPER
             const topWrapper = document.createElement("div");
@@ -541,14 +542,16 @@
 
             // 1. Cover Image
             const imageContainer = document.createElement("div");
-            imageContainer.className = "h-64 bg-amber-50 overflow-hidden flex items-center justify-center relative group mb-3 rounded-md";
+            imageContainer.className =
+              "h-64 bg-amber-50 overflow-hidden flex items-center justify-center relative group mb-3 rounded-md";
 
             const imageUrl = d.imagen_url;
             if (imageUrl) {
               const img = document.createElement("img");
               img.src = imageUrl;
               img.loading = "lazy";
-              img.className = "w-full h-full object-contain transition-transform duration-500 group-hover:scale-105";
+              img.className =
+                "w-full h-full object-contain transition-transform duration-500 group-hover:scale-105";
               imageContainer.appendChild(img);
             } else {
               const icon = document.createElement("i");
@@ -567,14 +570,16 @@
             adminInfoRow.appendChild(idElement);
 
             const iconElement = document.createElement("i");
-            iconElement.className = "fas fa-pen text-gray-400 flex-shrink-0 text-xs";
+            iconElement.className =
+              "fas fa-pen text-gray-400 flex-shrink-0 text-xs";
             adminInfoRow.appendChild(iconElement);
 
             topWrapper.appendChild(adminInfoRow);
 
             // 2. Technique
             const materialP = document.createElement("p");
-            materialP.className = "text-xs text-amber-700 font-medium uppercase tracking-wider mb-1";
+            materialP.className =
+              "text-xs text-amber-700 font-medium uppercase tracking-wider mb-1";
             materialP.textContent = d.material || "Técnica mixta";
             topWrapper.appendChild(materialP);
 
@@ -592,7 +597,8 @@
             if (tipo === "a_la_venta" && d.precio) {
               const priceSpan = document.createElement("span");
               priceSpan.className = "text-base font-bold text-amber-900";
-              priceSpan.textContent = d.precio === "Consultar PVP" ? d.precio : `${d.precio} €`;
+              priceSpan.textContent =
+                d.precio === "Consultar PVP" ? d.precio : `${d.precio} €`;
               dimPriceRow.appendChild(priceSpan);
             }
 
@@ -614,13 +620,15 @@
             labelsRow.className = "flex justify-between items-end mb-1";
 
             const scaleLabel = document.createElement("span");
-            scaleLabel.className = "text-[10px] text-gray-500 font-bold tracking-wider";
+            scaleLabel.className =
+              "text-[10px] text-gray-500 font-bold tracking-wider";
             scaleLabel.textContent = "ESCALA";
             labelsRow.appendChild(scaleLabel);
 
             // 6. Availability Tag
             const statusSpan = document.createElement("span");
-            statusSpan.className = "text-[10px] px-2 py-1 bg-amber-50 text-amber-800 rounded font-medium uppercase tracking-wider";
+            statusSpan.className =
+              "text-[10px] px-2 py-1 bg-amber-50 text-amber-800 rounded font-medium uppercase tracking-wider";
             statusSpan.textContent = d.estado || "En colección privada";
             labelsRow.appendChild(statusSpan);
 
@@ -636,14 +644,16 @@
 
             // SVG
             const svgWrapper = document.createElement("div");
-            svgWrapper.innerHTML = `<svg viewBox="0 0 320 512" class="h-16 w-auto text-gray-400" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><path d="M112 48a48 48 0 1 1 96 0 48 48 0 1 1 -96 0zm40 304V480c0 17.7-14.3 32-32 32s-32-14.3-32-32V256.9L59.4 304.5c-9.1 15.1-28.8 20-43.9 10.9s-20-28.8-10.9-43.9l58.3-97c17.4-28.9 48.6-46.6 82.3-46.6h29.7c33.7 0 64.9 17.7 82.3 46.6l58.3 97c9.1 15.1 4.2 34.8-10.9 43.9s-34.8 4.2-43.9-10.9L232 256.9V480c0 17.7-14.3 32-32 32s-32-14.3-32-32V352H152z"/></svg>`;
+            svgWrapper.innerHTML = `<img src="/assets/silueta.png" class="h-16 w-auto opacity-50 mix-blend-multiply bg-transparent" alt="Silueta de escala humana">`;
             leftSide.appendChild(svgWrapper.firstElementChild);
 
             // MATH
             let wCm = 50;
             let hCm = 50;
             if (d.dimensiones) {
-              const dimsParsed = d.dimensiones.match(/(\d+(?:\.\d+)?)[x\s*]+(\d+(?:\.\d+)?)/i);
+              const dimsParsed = d.dimensiones.match(
+                /(\d+(?:\.\d+)?)[x\s*]+(\d+(?:\.\d+)?)/i,
+              );
               if (dimsParsed && dimsParsed.length >= 3) {
                 wCm = parseFloat(dimsParsed[1]);
                 hCm = parseFloat(dimsParsed[2]);
