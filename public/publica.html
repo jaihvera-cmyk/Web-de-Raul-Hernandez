@@ -122,7 +122,9 @@
             href="https://instagram.com/raulhernandezme"
             target="_blank"
             rel="noopener noreferrer"
-            onclick="if(typeof gtag !== 'undefined') gtag('event', 'click_instagram');"
+            onclick="
+              if (typeof gtag !== 'undefined') gtag('event', 'click_instagram');
+            "
             class="text-amber-800 hover:text-amber-600 transition-colors flex items-center gap-2 bg-amber-50 px-3 py-1.5 rounded-full border border-amber-200 text-sm font-medium"
           >
             <i class="fab fa-instagram text-lg"></i>
@@ -140,10 +142,22 @@
         >
           Mi Obra
         </button>
-        <button class="nav-btn" onclick="if(typeof gtag !== 'undefined') gtag('event', 'nav_venta'); cambiarSeccion('a_la_venta', this)">
+        <button
+          class="nav-btn"
+          onclick="
+            if (typeof gtag !== 'undefined') gtag('event', 'nav_venta');
+            cambiarSeccion('a_la_venta', this);
+          "
+        >
           A la Venta
         </button>
-        <button class="nav-btn" onclick="if(typeof gtag !== 'undefined') gtag('event', 'nav_biografia'); cambiarSeccion('quien_soy', this)">
+        <button
+          class="nav-btn"
+          onclick="
+            if (typeof gtag !== 'undefined') gtag('event', 'nav_biografia');
+            cambiarSeccion('quien_soy', this);
+          "
+        >
           Quién Soy
         </button>
       </nav>
@@ -206,7 +220,9 @@
           <a
             href="https://instagram.com/raulhernandezme"
             target="_blank"
-            onclick="if(typeof gtag !== 'undefined') gtag('event', 'click_instagram');"
+            onclick="
+              if (typeof gtag !== 'undefined') gtag('event', 'click_instagram');
+            "
             class="hover:text-white transition-colors"
             ><i class="fab fa-instagram text-lg"></i
           ></a>
@@ -458,10 +474,57 @@
               bottomContainer.appendChild(waContainer);
             }
 
+            const scaleARContainer = document.createElement("div");
+            scaleARContainer.className =
+              "w-full flex flex-wrap justify-between items-end mt-4 gap-2";
+
+            const scaleVisualContainer = document.createElement("div");
+            scaleVisualContainer.className = "flex flex-col";
+
+            const scaleLabel = document.createElement("span");
+            scaleLabel.className =
+              "text-[10px] text-gray-500 uppercase tracking-wider mb-1";
+            scaleLabel.textContent = "Comparación de escala";
+            scaleVisualContainer.appendChild(scaleLabel);
+
+            const scaleFiguresContainer = document.createElement("div");
+            scaleFiguresContainer.className = "flex items-end gap-1";
+
+            let wCm = 50;
+            let hCm = 50;
+            if (ob.dimensiones) {
+              const dimsParsed = ob.dimensiones.match(/(\d+)[x\s*]+(\d+)/i);
+              if (dimsParsed && dimsParsed.length >= 3) {
+                wCm = parseInt(dimsParsed[1], 10);
+                hCm = parseInt(dimsParsed[2], 10);
+              }
+            }
+
+            const personHeightPx = 40;
+            const averagePersonHeightCm = 175;
+
+            const artHeightPx = (hCm / averagePersonHeightCm) * personHeightPx;
+            const artWidthPx = (wCm / averagePersonHeightCm) * personHeightPx;
+
+            const personSvg = document.createElement("div");
+            personSvg.innerHTML =
+              '<svg fill="#9ca3af" height="40px" width="15px" viewBox="0 0 320 512"><path d="M112 48a48 48 0 1 1 96 0 48 48 0 1 1 -96 0zm40 304V480c0 17.7-14.3 32-32 32s-32-14.3-32-32V256.9L59.4 304.5c-9.1 15.1-28.8 20-43.9 10.9s-20-28.8-10.9-43.9l58.3-97c17.4-28.9 48.6-46.6 82.3-46.6h29.7c33.7 0 64.9 17.7 82.3 46.6l58.3 97c9.1 15.1 4.2 34.8-10.9 43.9s-34.8 4.2-43.9-10.9L232 256.9V480c0 17.7-14.3 32-32 32s-32-14.3-32-32V352H152z"/></svg>';
+            scaleFiguresContainer.appendChild(personSvg.firstChild);
+
+            const artVisual = document.createElement("div");
+            artVisual.style.height = `${artHeightPx}px`;
+            artVisual.style.width = `${artWidthPx}px`;
+            artVisual.className =
+              "bg-amber-100 border border-amber-300 shadow-sm";
+            scaleFiguresContainer.appendChild(artVisual);
+
+            scaleVisualContainer.appendChild(scaleFiguresContainer);
+            scaleARContainer.appendChild(scaleVisualContainer);
+
             const raLink = document.createElement("a");
             raLink.href = "javascript:void(0)";
             raLink.className =
-              "mt-2 text-center text-xs text-amber-700/80 hover:text-amber-900 flex justify-center items-center py-2 transition-colors";
+              "text-xs text-amber-700/80 hover:text-amber-900 flex items-center py-2 transition-colors";
             raLink.innerHTML =
               '<i class="fas fa-cube mr-2"></i>Ver en tu pared';
             raLink.addEventListener("click", () => {
@@ -473,7 +536,9 @@
               }
               abrirModalRA(doc.id, imageUrl || "", ob.dimensiones || "");
             });
-            bottomContainer.appendChild(raLink);
+            scaleARContainer.appendChild(raLink);
+
+            bottomContainer.appendChild(scaleARContainer);
 
             contentContainer.appendChild(bottomContainer);
             card.appendChild(contentContainer);
