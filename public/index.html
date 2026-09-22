@@ -569,9 +569,16 @@
             statusElement.textContent = d.estado || "Privada";
             detailsContainer.appendChild(statusElement);
 
+            if (tipo === "a_la_venta" && d.precio) {
+              const precioElement = document.createElement("p");
+              precioElement.className = "text-xs font-semibold text-amber-900 mt-1";
+              precioElement.textContent = d.precio === "Consultar PVP" ? d.precio : `${d.precio} €`;
+              detailsContainer.appendChild(precioElement);
+            }
+
             const idElement = document.createElement("p");
             idElement.className = "text-[10px] text-gray-400 font-mono mt-1";
-            idElement.textContent = doc.id;
+            idElement.textContent = `#${doc.id.substring(0, 5)}`;
             detailsContainer.appendChild(idElement);
 
             card.appendChild(detailsContainer);
