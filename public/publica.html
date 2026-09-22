@@ -306,6 +306,7 @@
 
           docsToShow.forEach((doc) => {
             const ob = doc.data();
+            ob.id = doc.id;
 
             const textoAlt = `Cuadro de Raúl Hernández - ${ob.material || "Técnica mixta"} - ${ob.dimensiones || "Sin medidas"}`;
 
@@ -442,6 +443,14 @@
                   "w-full flex items-center justify-center bg-amber-900 text-white py-3 md:py-2.5 rounded-lg text-sm font-medium hover:bg-amber-800 transition-colors cursor-pointer relative z-10";
                 waLink.innerHTML =
                   '<i class="fab fa-whatsapp mr-2 text-base md:text-sm md:mr-1"></i> Consultar disponibilidad';
+                waLink.addEventListener("click", () => {
+                  if (typeof window.gtag !== "undefined") {
+                    gtag("event", "click_whatsapp", {
+                      obra_id: ob.id,
+                      tecnica: ob.tecnica,
+                    });
+                  }
+                });
                 waContainer.appendChild(waLink);
               }
               bottomContainer.appendChild(waContainer);
@@ -453,9 +462,15 @@
               "mt-2 text-center text-xs text-amber-700/80 hover:text-amber-900 flex justify-center items-center py-2 transition-colors";
             raLink.innerHTML =
               '<i class="fas fa-cube mr-2"></i>Ver en tu pared';
-            raLink.addEventListener("click", () =>
-              abrirModalRA(doc.id, imageUrl || "", ob.dimensiones || ""),
-            );
+            raLink.addEventListener("click", () => {
+              if (typeof window.gtag !== "undefined") {
+                gtag("event", "abrir_ar", {
+                  obra_id: ob.id,
+                  tecnica: ob.tecnica,
+                });
+              }
+              abrirModalRA(doc.id, imageUrl || "", ob.dimensiones || "");
+            });
             bottomContainer.appendChild(raLink);
 
             contentContainer.appendChild(bottomContainer);
