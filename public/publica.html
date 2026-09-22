@@ -486,12 +486,12 @@
 
             const scaleARContainer = document.createElement("div");
             scaleARContainer.className =
-              "w-full flex justify-between items-end gap-2";
+              "w-full flex justify-between items-center gap-2";
 
             const scaleFiguresContainer = document.createElement("div");
             scaleFiguresContainer.className =
               "relative w-32";
-            scaleFiguresContainer.style.height = "60px";
+            scaleFiguresContainer.style.height = "90px";
 
             let wCm = 50;
             let hCm = 50;
@@ -503,7 +503,7 @@
               }
             }
 
-            const personHeightPx = 40;
+            const personHeightPx = 60;
             const averagePersonHeightCm = 175;
 
             const artHeightPx = (hCm / averagePersonHeightCm) * personHeightPx;
@@ -511,14 +511,14 @@
 
             const personSvg = document.createElement("div");
             personSvg.innerHTML =
-              '<svg class="absolute bottom-0 left-0" fill="#E6CBA8" width="12" height="40" viewBox="0 0 44 140" xmlns="http://www.w3.org/2000/svg"><path d="M21.9 23.3c6 0 10.8-4.9 10.8-10.9S27.9 1.5 21.9 1.5 11 6.4 11 12.4s4.9 10.9 10.9 10.9zm13.1 3.5h-2.3c-2.4 1.5-5.3 2.4-8.4 2.4-3.5 0-6.7-.9-9.3-2.6h-1.9c-7.3 0-13.1 5.8-13.1 13.1v17.4c0 3.6 3 6.6 6.6 6.6h2.2v73c0 2.4 2 4.4 4.4 4.4h5.8c2.4 0 4.4-2 4.4-4.4v-38.6h2.9v38.6c0 2.4 2 4.4 4.4 4.4h5.8c2.4 0 4.4-2 4.4-4.4v-73h2.2c3.6 0 6.6-3 6.6-6.6V39.9c.1-7.3-5.8-13.1-13.1-13.1z"/></svg>';
+              '<svg class="absolute bottom-0 left-0" fill="#E6CBA8" width="18" height="60" viewBox="0 0 44 140" xmlns="http://www.w3.org/2000/svg"><path d="M21.9 23.3c6 0 10.8-4.9 10.8-10.9S27.9 1.5 21.9 1.5 11 6.4 11 12.4s4.9 10.9 10.9 10.9zm13.1 3.5h-2.3c-2.4 1.5-5.3 2.4-8.4 2.4-3.5 0-6.7-.9-9.3-2.6h-1.9c-7.3 0-13.1 5.8-13.1 13.1v17.4c0 3.6 3 6.6 6.6 6.6h2.2v73c0 2.4 2 4.4 4.4 4.4h5.8c2.4 0 4.4-2 4.4-4.4v-38.6h2.9v38.6c0 2.4 2 4.4 4.4 4.4h5.8c2.4 0 4.4-2 4.4-4.4v-73h2.2c3.6 0 6.6-3 6.6-6.6V39.9c.1-7.3-5.8-13.1-13.1-13.1z"/></svg>';
             scaleFiguresContainer.appendChild(personSvg.firstChild);
 
             const artVisual = document.createElement("div");
             artVisual.style.height = `${artHeightPx}px`;
             artVisual.style.width = `${artWidthPx}px`;
-            artVisual.style.left = "24px";
-            artVisual.style.bottom = `${26.66 - artHeightPx / 2}px`;
+            artVisual.style.left = "30px";
+            artVisual.style.bottom = `${40 - artHeightPx / 2}px`;
             artVisual.className =
               "absolute bg-amber-100 border border-amber-300 shadow-sm";
             scaleFiguresContainer.appendChild(artVisual);
